@@ -1,0 +1,376 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" name="viewport"><meta content="mobile_stack" name="shell-type"><link href="https://fonts.googleapis.com" rel="preconnect"><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config = { darkMode: "class", theme: { extend: { "colors": { "on-secondary": "#ffffff", "surface-tint": "#625b6d", "surface-container-highest": "#e3e1ec", "surface-bright": "#fbf8ff", "primary": "#000000", "secondary-fixed-dim": "#ebc30d", "on-surface-variant": "#49454c", "on-secondary-fixed": "#231b00", "surface-container-low": "#f4f2fd", "on-secondary-fixed-variant": "#554500", "outline-variant": "#cac5cc", "on-surface": "#1a1b22", "surface-container": "#eeedf7", "on-tertiary-fixed-variant": "#5211c5", "tertiary-fixed": "#e8ddff", "secondary": "#715c00", "surface-variant": "#e3e1ec", "on-primary-fixed-variant": "#4a4455", "on-primary": "#ffffff", "on-error": "#ffffff", "on-primary-container": "#888094", "tertiary-fixed-dim": "#cebdff", "on-background": "#1a1b22", "inverse-surface": "#2f3038", "on-tertiary-container": "#9067ff", "primary-fixed-dim": "#ccc3d8", "inverse-primary": "#ccc3d8", "tertiary": "#000000", "on-primary-fixed": "#1e1928", "on-secondary-container": "#705b00", "on-tertiary-fixed": "#21005d", "background": "#fbf8ff", "error": "#ba1a1a", "error-container": "#ffdad6", "surface": "#fbf8ff", "primary-fixed": "#e9def4", "tertiary-container": "#21005d", "primary-container": "#1e1928", "inverse-on-surface": "#f1effa", "on-error-container": "#93000a", "surface-container-lowest": "#ffffff", "surface-container-high": "#e8e7f1", "surface-dim": "#dad9e3", "outline": "#7a767c", "secondary-fixed": "#ffe17a", "on-tertiary": "#ffffff", "secondary-container": "#fdd428" }, "borderRadius": { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px" }, "spacing": { "space-xs": "0.25rem", "gutter-desktop": "1.5rem", "margin": "1rem", "space-sm": "0.5rem", "space-lg": "1.5rem", "gutter": "1rem", "margin-desktop": "2rem", "space-xl": "2rem", "space-md": "1rem" }, "fontFamily": { "body-lg": ["Inter"], "headline-lg": ["Inter"], "label-md": ["Inter"], "headline-xl-mobile": ["Inter"], "label-lg": ["Inter"], "label-sm": ["Inter"], "body-md": ["Inter"], "body-sm": ["Inter"], "headline-lg-mobile": ["Inter"], "headline-md": ["Inter"], "headline-xl": ["Inter"], "currency-stat": ["Inter"] }, "fontSize": { "body-lg": ["16px", { "lineHeight": "24px", "fontWeight": "400" }], "headline-lg": ["24px", { "lineHeight": "32px", "fontWeight": "600" }], "label-md": ["12px", { "lineHeight": "16px", "letterSpacing": "0.02em", "fontWeight": "600" }], "headline-xl-mobile": ["24px", { "lineHeight": "32px", "fontWeight": "700" }], "label-lg": ["14px", { "lineHeight": "20px", "fontWeight": "600" }], "label-sm": ["11px", { "lineHeight": "14px", "letterSpacing": "0.04em", "fontWeight": "600" }], "body-md": ["14px", { "lineHeight": "20px", "fontWeight": "400" }], "body-sm": ["12px", { "lineHeight": "16px", "fontWeight": "400" }], "headline-lg-mobile": ["20px", { "lineHeight": "28px", "fontWeight": "600" }], "headline-md": ["18px", { "lineHeight": "24px", "fontWeight": "600" }], "headline-xl": ["32px", { "lineHeight": "40px", "fontWeight": "700" }], "currency-stat": ["20px", { "lineHeight": "28px", "fontWeight": "700" }] } } } };</script><style>@layer base{html,body{width:100vw;margin:0;padding:0;min-height:100vh;}body{overscroll-behavior-y:none;-webkit-tap-highlight-color:transparent;}.pb-safe{padding-bottom:env(safe-area-inset-bottom,0px);}.pt-safe{padding-top:env(safe-area-inset-top,0px);}}::-webkit-scrollbar{display:none;}</style><style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head><body class="bg-surface text-on-surface font-body-md flex flex-col min-h-screen selection:bg-secondary-fixed"><header class="fixed top-0 w-full z-50 bg-surface-container-lowest/90 backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.04)] pt-safe"><div class="h-16 px-margin flex items-center justify-between gap-space-sm"><div class="flex items-center gap-space-xs min-w-0"><button aria-label="Go Back" class="w-11 h-11 -ml-2 flex items-center justify-center text-on-surface hover:text-on-surface-variant transition-colors" onclick="history.back()"><span class="material-symbols-outlined text-[24px]">arrow_back</span></button><img alt="GimBooks GST Logo" class="h-7 w-auto object-contain shrink-0 hidden xs:block" src="https://lh3.googleusercontent.com/aida/ALJJyrDGvCU1CKS37tb8-RT8ZrvMoGZZ3XcuDoBIqCBa1Mv4AbDTgtDOWtj1SH8rF9ghWv7BHnXbyWIefg9WdRIywJlTYpMKI7ufNCxMXDzmBgLU2kVtVMVz6FVHQia1_uSMWPSJ-BiUjJ23MEe5n0Fiw8UKr-51HHcBCQ03pkUspp2IoSEZh5GFHvPdI0MH3esmhmjkkJ4vYZqTGFHCGULpPYhSFwuApUF53q9CcSzKP3ea"><h1 class="text-headline-md font-headline-md text-on-surface truncate ml-1">Invoice Detail</h1></div><div class="flex items-center gap-space-xs shrink-0"><button aria-label="User Profile" class="w-11 h-11 flex items-center justify-center"><div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center shadow-sm"><span class="material-symbols-outlined text-on-primary text-[18px]">person</span></div></button></div></div></header><main class="flex flex-col relative w-full pt-16 pb-safe bg-surface min-h-screen"><div class="flex flex-col w-full">
+<!-- Interactive Toast Notification Container -->
+<div class="fixed top-20 left-1/2 -translate-x-1/2 z-50 transition-all duration-300 pointer-events-none opacity-0 translate-y-[-8px] px-space-md py-space-sm bg-primary text-on-primary rounded-xl shadow-xl flex items-center gap-space-xs max-w-[90vw]" id="toast">
+<span class="material-symbols-outlined text-[20px] text-secondary-fixed">check_circle</span>
+<span class="font-body-sm text-body-sm text-on-primary truncate" id="toast-text">Action completed successfully</span>
+</div>
+<!-- Document Meta & Status Header Bar -->
+<section class="px-margin pt-space-sm pb-space-xs flex flex-col gap-space-xs">
+<div class="flex items-center justify-between gap-space-xs">
+<div class="flex items-center gap-space-xs min-w-0">
+<span class="font-label-lg text-label-lg text-on-surface truncate">INV-2026-089</span>
+<span class="inline-flex items-center px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-800 font-label-sm text-label-sm">
+<span class="w-1.5 h-1.5 rounded-full bg-emerald-600 mr-1.5"></span>
+          PAID
+        </span>
+</div>
+<div class="flex items-center gap-1 shrink-0">
+<button aria-label="Share Invoice" class="w-9 h-9 rounded-lg bg-surface-container-low hover:bg-surface-container flex items-center justify-center text-on-surface transition-colors" onclick="triggerToast('Invoice link ready to share')">
+<span class="material-symbols-outlined text-[20px]">share</span>
+</button>
+<button aria-label="Download Invoice" class="w-9 h-9 rounded-lg bg-surface-container-low hover:bg-surface-container flex items-center justify-center text-on-surface transition-colors" onclick="triggerToast('Downloading PDF...')">
+<span class="material-symbols-outlined text-[20px]">download</span>
+</button>
+</div>
+</div>
+<div class="flex items-center justify-between text-on-surface-variant font-body-sm text-body-sm">
+<span>Generated on 12 Nov, 2026</span>
+<span class="font-label-sm text-label-sm px-2 py-0.5 rounded bg-surface-container-high text-on-surface-variant">e-Invoice Compliant</span>
+</div>
+</section>
+<!-- Quick Actions Grid Bar -->
+<section class="px-margin py-space-sm">
+<div class="grid grid-cols-4 gap-space-xs">
+<button class="flex flex-col items-center justify-center py-2.5 px-1 rounded-xl bg-surface-container-lowest shadow-sm hover:shadow active:scale-95 transition-all text-center" onclick="triggerToast('Opening WhatsApp with PDF invoice...')">
+<div class="w-8 h-8 rounded-full bg-emerald-100 flex items-center justify-center mb-1 text-emerald-700">
+<span class="material-symbols-outlined text-[18px]">chat</span>
+</div>
+<span class="font-label-sm text-label-sm text-on-surface truncate w-full">WhatsApp</span>
+</button>
+<button class="flex flex-col items-center justify-center py-2.5 px-1 rounded-xl bg-surface-container-lowest shadow-sm hover:shadow active:scale-95 transition-all text-center" onclick="triggerToast('Initiating PDF export with digital sign...')">
+<div class="w-8 h-8 rounded-full bg-surface-container flex items-center justify-center mb-1 text-on-surface">
+<span class="material-symbols-outlined text-[18px]">picture_as_pdf</span>
+</div>
+<span class="font-label-sm text-label-sm text-on-surface truncate w-full">PDF</span>
+</button>
+<button class="flex flex-col items-center justify-center py-2.5 px-1 rounded-xl bg-surface-container-lowest shadow-sm hover:shadow active:scale-95 transition-all text-center" onclick="triggerToast('Already fully paid on 12 Nov')">
+<div class="w-8 h-8 rounded-full bg-secondary-fixed/50 flex items-center justify-center mb-1 text-on-secondary-fixed">
+<span class="material-symbols-outlined text-[18px]">receipt_long</span>
+</div>
+<span class="font-label-sm text-label-sm text-on-surface truncate w-full">Receipt</span>
+</button>
+<button class="flex flex-col items-center justify-center py-2.5 px-1 rounded-xl bg-surface-container-lowest shadow-sm hover:shadow active:scale-95 transition-all text-center relative" id="more-menu-btn" onclick="toggleMenu()">
+<div class="w-8 h-8 rounded-full bg-surface-container flex items-center justify-center mb-1 text-on-surface">
+<span class="material-symbols-outlined text-[18px]">more_horiz</span>
+</div>
+<span class="font-label-sm text-label-sm text-on-surface truncate w-full">More</span>
+<!-- Dropdown Flyout -->
+<div class="hidden absolute top-full right-0 mt-2 w-48 bg-surface-container-lowest rounded-xl shadow-xl py-1 text-left z-40" id="more-menu">
+<div class="px-space-md py-2 hover:bg-surface-container-low flex items-center gap-space-xs font-body-sm text-body-sm text-on-surface cursor-pointer" onclick="triggerToast('Generating e-Way bill #WB-84920'); event.stopPropagation();">
+<span class="material-symbols-outlined text-[18px] text-surface-tint">local_shipping</span>
+<span>Gen e-Way Bill</span>
+</div>
+<div class="px-space-md py-2 hover:bg-surface-container-low flex items-center gap-space-xs font-body-sm text-body-sm text-on-surface cursor-pointer" onclick="triggerToast('Invoice duplicated as Draft'); event.stopPropagation();">
+<span class="material-symbols-outlined text-[18px] text-surface-tint">content_copy</span>
+<span>Duplicate Invoice</span>
+</div>
+<div class="px-space-md py-2 hover:bg-surface-container-low flex items-center gap-space-xs font-body-sm text-body-sm text-on-surface cursor-pointer" onclick="triggerToast('Credit note flow opened'); event.stopPropagation();">
+<span class="material-symbols-outlined text-[18px] text-surface-tint">note_add</span>
+<span>Credit Note</span>
+</div>
+<div class="px-space-md py-2 hover:bg-surface-container-low flex items-center gap-space-xs font-body-sm text-body-sm text-on-surface cursor-pointer" onclick="triggerToast('Invoice print dispatched'); event.stopPropagation();">
+<span class="material-symbols-outlined text-[18px] text-surface-tint">print</span>
+<span>Print Invoice</span>
+</div>
+</div>
+</button>
+</div>
+</section>
+<!-- Realistic Digital GST Tax Invoice Document Card -->
+<section class="px-margin py-space-xs">
+<div class="w-full bg-surface-container-lowest rounded-xl shadow-sm overflow-hidden flex flex-col">
+<!-- Invoice Title Strip with Decorative Watermark Pattern -->
+<div class="p-space-md bg-gradient-to-r from-surface-container to-surface-container-low flex items-start justify-between gap-space-sm">
+<div class="flex flex-col">
+<div class="flex items-center gap-2">
+<span class="px-2 py-0.5 rounded bg-primary text-on-primary font-label-sm text-label-sm tracking-widest uppercase">TAX INVOICE</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant font-medium">ORIGINAL FOR RECIPIENT</span>
+</div>
+<p class="font-headline-lg-mobile text-headline-lg-mobile text-on-surface mt-1.5 font-bold">INV-2026-089</p>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Dated: 12 Nov, 2026</span>
+</div>
+<!-- Simulated IRN QR Code for E-Invoicing Verification -->
+<div class="flex flex-col items-center bg-surface-container-lowest p-1.5 rounded-lg shadow-sm shrink-0">
+<svg class="w-16 h-16 text-primary" fill="currentColor" viewBox="0 0 100 100">
+<rect fill="#FFFFFF" height="100" width="100"></rect>
+<!-- Corner marker TL -->
+<rect fill="#1A1B22" height="26" width="26" x="10" y="10"></rect>
+<rect fill="#FFFFFF" height="16" width="16" x="15" y="15"></rect>
+<rect fill="#1A1B22" height="8" width="8" x="19" y="19"></rect>
+<!-- Corner marker TR -->
+<rect fill="#1A1B22" height="26" width="26" x="64" y="10"></rect>
+<rect fill="#FFFFFF" height="16" width="16" x="69" y="15"></rect>
+<rect fill="#1A1B22" height="8" width="8" x="73" y="19"></rect>
+<!-- Corner marker BL -->
+<rect fill="#1A1B22" height="26" width="26" x="10" y="64"></rect>
+<rect fill="#FFFFFF" height="16" width="16" x="15" y="69"></rect>
+<rect fill="#1A1B22" height="8" width="8" x="19" y="73"></rect>
+<!-- QR Data bits -->
+<rect fill="#1A1B22" height="6" width="6" x="42" y="12"></rect>
+<rect fill="#1A1B22" height="6" width="6" x="52" y="18"></rect>
+<rect fill="#1A1B22" height="6" width="6" x="42" y="30"></rect>
+<rect fill="#1A1B22" height="6" width="6" x="22" y="44"></rect>
+<rect fill="#1A1B22" height="6" width="6" x="34" y="44"></rect>
+<rect fill="#1A1B22" height="6" width="6" x="46" y="44"></rect>
+<rect fill="#1A1B22" height="6" width="6" x="58" y="44"></rect>
+<rect fill="#1A1B22" height="6" width="6" x="70" y="44"></rect>
+<rect fill="#1A1B22" height="6" width="6" x="82" y="44"></rect>
+<rect fill="#1A1B22" height="6" width="6" x="46" y="58"></rect>
+<rect fill="#1A1B22" height="6" width="6" x="58" y="70"></rect>
+<rect fill="#1A1B22" height="6" width="6" x="70" y="60"></rect>
+<rect fill="#1A1B22" height="6" width="6" x="80" y="76"></rect>
+<rect fill="#1A1B22" height="6" width="6" x="44" y="80"></rect>
+</svg>
+<span class="font-label-sm text-[9px] text-surface-tint tracking-tighter mt-0.5">IRN VERIFIED</span>
+</div>
+</div>
+<!-- IRN Hash Strip -->
+<div class="px-space-md py-1.5 bg-surface-container text-on-surface-variant flex items-center justify-between text-[11px] font-mono font-medium">
+<span class="truncate mr-2">IRN: 8a93e507b9a47...5c0d24e</span>
+<button class="shrink-0 text-on-surface hover:text-primary flex items-center" onclick="navigator.clipboard.writeText('8a93e507b9a47d2f91bc9a3e2189d9e4a3b1d7f8c0e2a39d8e7c1f8a9235c0d24e'); triggerToast('Full IRN Hash Copied!')">
+<span class="material-symbols-outlined text-[14px]">content_copy</span>
+</button>
+</div>
+<!-- Company / Seller Section -->
+<div class="p-space-md bg-surface-container-lowest flex flex-col gap-1">
+<div class="flex items-center gap-space-xs">
+<div class="w-7 h-7 rounded bg-secondary-container text-on-secondary-fixed flex items-center justify-center font-bold text-body-md">GST</div>
+<h2 class="font-headline-md text-headline-md text-on-surface">GST Billing Solutions Pvt Ltd</h2>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant leading-relaxed">
+          Office 402, Pinnacle Business Bay, Baner High Street, Pune, Maharashtra - 411045
+        </p>
+<div class="flex flex-wrap gap-x-space-md gap-y-1 mt-1 font-body-sm text-body-sm">
+<div><strong class="text-on-surface">GSTIN:</strong> <span class="font-mono text-on-surface-variant font-medium">27AAAAA0000A1Z5</span></div>
+<div><strong class="text-on-surface">State:</strong> Maharashtra (27)</div>
+<div><strong class="text-on-surface">PAN:</strong> <span class="font-mono text-on-surface-variant">AAAAA0000A</span></div>
+</div>
+</div>
+<!-- Buyer Details: Billed To / Shipped To -->
+<div class="grid grid-cols-1 sm:grid-cols-2 gap-space-sm p-space-md bg-surface-container-low">
+<div class="flex flex-col gap-1">
+<div class="flex items-center gap-1 text-on-surface">
+<span class="material-symbols-outlined text-[16px] text-surface-tint">account_balance</span>
+<span class="font-label-md text-label-md uppercase tracking-wider text-surface-tint">Billed To (Client)</span>
+</div>
+<p class="font-label-lg text-label-lg text-on-surface">Reliance Retail Limited</p>
+<p class="font-body-sm text-body-sm text-on-surface-variant">
+            3rd Floor, Court House, Lokmanya Tilak Marg, Dhobi Talao, Mumbai, MH - 400002
+          </p>
+<p class="font-body-sm text-body-sm text-on-surface-variant">
+<strong>GSTIN:</strong> <span class="font-mono font-medium">27AABCR1234F1ZX</span>
+</p>
+<p class="font-body-sm text-body-sm text-on-surface-variant">
+<strong>State:</strong> Maharashtra (27) | POS: 27
+          </p>
+</div>
+<div class="flex flex-col gap-1">
+<div class="flex items-center gap-1 text-on-surface">
+<span class="material-symbols-outlined text-[16px] text-surface-tint">local_shipping</span>
+<span class="font-label-md text-label-md uppercase tracking-wider text-surface-tint">Dispatch &amp; Logistics</span>
+</div>
+<p class="font-label-lg text-label-lg text-on-surface">Central Logistics Center (Bhiwandi)</p>
+<p class="font-body-sm text-body-sm text-on-surface-variant">
+            Warehouse Unit #4B, Kalyan-Bhiwandi Junction, Thane, MH - 421302
+          </p>
+<div class="grid grid-cols-2 gap-1 mt-1 font-body-sm text-body-sm text-on-surface-variant">
+<div><strong>Due Date:</strong> 27-11-2026</div>
+<div><strong>Rev. Charge:</strong> No</div>
+</div>
+</div>
+</div>
+<!-- Line Items Section (Mobile Card Structure) -->
+<div class="p-space-md flex flex-col gap-space-sm">
+<div class="flex items-center justify-between pb-1">
+<span class="font-label-md text-label-md uppercase text-on-surface-variant tracking-wider">Itemized Breakdown</span>
+<span class="font-label-sm text-label-sm text-surface-tint">3 Line Items</span>
+</div>
+<!-- Item 1 -->
+<div class="p-space-sm rounded-lg bg-surface-container-low flex flex-col gap-1.5">
+<div class="flex items-start justify-between gap-space-xs">
+<div class="flex flex-col min-w-0">
+<span class="font-label-lg text-label-lg text-on-surface">Enterprise Cloud Server Hosting</span>
+<span class="font-body-sm text-body-sm text-surface-tint">HSN/SAC: 998315 • Annual SLA License</span>
+</div>
+<span class="font-label-lg text-label-lg text-on-surface shrink-0">₹45,000.00</span>
+</div>
+<div class="flex items-center justify-between font-body-sm text-body-sm text-on-surface-variant pt-1">
+<span>Qty: 1 Unit @ ₹45,000.00</span>
+<span class="font-label-sm text-label-sm px-1.5 py-0.5 rounded bg-surface-container text-on-surface-variant">CGST (9%) + SGST (9%)</span>
+</div>
+</div>
+<!-- Item 2 -->
+<div class="p-space-sm rounded-lg bg-surface-container-low flex flex-col gap-1.5">
+<div class="flex items-start justify-between gap-space-xs">
+<div class="flex flex-col min-w-0">
+<span class="font-label-lg text-label-lg text-on-surface">GST Automated e-Invoicing API Gateway</span>
+<span class="font-body-sm text-body-sm text-surface-tint">HSN/SAC: 998313 • Integration Pack (10k docs)</span>
+</div>
+<span class="font-label-lg text-label-lg text-on-surface shrink-0">₹20,000.00</span>
+</div>
+<div class="flex items-center justify-between font-body-sm text-body-sm text-on-surface-variant pt-1">
+<span>Qty: 2 Packs @ ₹10,000.00</span>
+<span class="font-label-sm text-label-sm px-1.5 py-0.5 rounded bg-surface-container text-on-surface-variant">CGST (9%) + SGST (9%)</span>
+</div>
+</div>
+<!-- Item 3 -->
+<div class="p-space-sm rounded-lg bg-surface-container-low flex flex-col gap-1.5">
+<div class="flex items-start justify-between gap-space-xs">
+<div class="flex flex-col min-w-0">
+<span class="font-label-lg text-label-lg text-on-surface">Compliance Onboarding &amp; Training Session</span>
+<span class="font-body-sm text-body-sm text-surface-tint">HSN/SAC: 998319 • Certified CA Consultation</span>
+</div>
+<span class="font-label-lg text-label-lg text-on-surface shrink-0">₹6,339.00</span>
+</div>
+<div class="flex items-center justify-between font-body-sm text-body-sm text-on-surface-variant pt-1">
+<span>Qty: 1 Session @ ₹6,339.00</span>
+<span class="font-label-sm text-label-sm px-1.5 py-0.5 rounded bg-surface-container text-on-surface-variant">CGST (9%) + SGST (9%)</span>
+</div>
+</div>
+</div>
+<!-- Financial Reconciliation / Tax Calculation Table -->
+<div class="px-space-md pb-space-md">
+<div class="p-space-md rounded-xl bg-surface-container flex flex-col gap-2">
+<div class="flex justify-between font-body-sm text-body-sm text-on-surface-variant">
+<span>Taxable Subtotal</span>
+<span class="font-mono text-on-surface font-medium">₹71,339.00</span>
+</div>
+<div class="flex justify-between font-body-sm text-body-sm text-on-surface-variant">
+<span>CGST (9.0%)</span>
+<span class="font-mono text-on-surface font-medium">₹6,420.51</span>
+</div>
+<div class="flex justify-between font-body-sm text-body-sm text-on-surface-variant">
+<span>SGST (9.0%)</span>
+<span class="font-mono text-on-surface font-medium">₹6,420.51</span>
+</div>
+<div class="flex justify-between font-body-sm text-body-sm text-on-surface-variant">
+<span>Round Off Adjustment</span>
+<span class="font-mono text-on-surface font-medium">+₹0.98</span>
+</div>
+<!-- Grand Total Row -->
+<div class="mt-1 pt-2 bg-surface-container-lowest p-space-sm rounded-lg flex items-center justify-between shadow-sm">
+<div class="flex flex-col">
+<span class="font-label-md text-label-md uppercase tracking-wider text-surface-tint">Total Invoice Value</span>
+<span class="font-body-sm text-[11px] text-surface-tint">Eighty Four Thousand Two Hundred Only</span>
+</div>
+<span class="font-currency-stat text-currency-stat text-on-surface">₹84,200.00</span>
+</div>
+</div>
+</div>
+<!-- Bank Details & Authorized Seal Section -->
+<div class="p-space-md bg-surface-container-low flex flex-col sm:flex-row gap-space-md items-start sm:items-center justify-between">
+<div class="flex flex-col gap-1">
+<span class="font-label-sm text-label-sm uppercase tracking-wider text-surface-tint font-bold">Bank Transfer Account</span>
+<div class="font-body-sm text-body-sm text-on-surface-variant">
+<div>Bank: <strong>HDFC Bank Ltd</strong> (Baner Branch)</div>
+<div>A/C: <span class="font-mono font-medium text-on-surface">50200084920192</span></div>
+<div>IFSC: <span class="font-mono font-medium text-on-surface">HDFC0001429</span></div>
+</div>
+</div>
+<div class="flex flex-col items-center sm:items-end gap-1 w-full sm:w-auto">
+<div class="w-32 h-16 rounded bg-surface-container-lowest p-1 flex flex-col items-center justify-center relative shadow-sm">
+<!-- Simulated Stamp Graphic -->
+<div class="absolute inset-1 rounded opacity-25 flex items-center justify-center bg-violet-600/10 pointer-events-none">
+<span class="text-violet-800 text-[10px] font-bold tracking-widest uppercase rotate-[-12deg]">DIGITALLY VERIFIED</span>
+</div>
+<span class="material-symbols-outlined text-[24px] text-on-secondary-fixed-variant">draw</span>
+<span class="text-[10px] text-on-surface font-bold">R. Sen (Director)</span>
+</div>
+<span class="font-label-sm text-[11px] text-surface-tint">For GST Billing Solutions Pvt Ltd</span>
+</div>
+</div>
+</div>
+</section>
+<!-- Payment Timeline & Audit Trail Section -->
+<section class="px-margin py-space-sm flex flex-col gap-space-sm mb-space-xl">
+<div class="flex items-center justify-between">
+<h3 class="font-headline-md text-headline-md text-on-surface">Settlement &amp; Audit Trail</h3>
+<span class="font-label-sm text-label-sm px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 font-semibold">100% Settled</span>
+</div>
+<!-- Timeline Event Card -->
+<div class="p-space-md rounded-xl bg-surface-container-lowest shadow-sm flex flex-col gap-space-sm">
+<div class="flex items-start gap-space-sm">
+<div class="w-9 h-9 rounded-full bg-emerald-100 text-emerald-800 flex items-center justify-center shrink-0 mt-0.5">
+<span class="material-symbols-outlined text-[20px]">account_balance_wallet</span>
+</div>
+<div class="flex flex-col min-w-0 flex-1">
+<div class="flex items-center justify-between">
+<span class="font-label-lg text-label-lg text-on-surface">Full Payment Received</span>
+<span class="font-label-lg text-label-lg text-emerald-700 font-bold">₹84,200</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-0.5">
+            Settled via Direct NEFT / RTGS (Ref: <span class="font-mono font-medium">HDFC-N84910294</span>)
+          </p>
+<div class="flex items-center gap-space-xs mt-2 text-surface-tint font-body-sm text-[11px]">
+<span class="material-symbols-outlined text-[14px]">event</span>
+<span>12 Nov 2026, 04:32 PM</span>
+<span class="mx-1">•</span>
+<span class="text-emerald-700 font-medium">Auto-Reconciled</span>
+</div>
+</div>
+</div>
+<!-- Action pill for receipt verification -->
+<div class="p-space-sm rounded-lg bg-surface-container-low flex items-center justify-between">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-[18px] text-surface-tint">verified</span>
+<span class="font-body-sm text-body-sm text-on-surface">Bank Voucher: #VCH-2026-904</span>
+</div>
+<button class="font-label-sm text-label-sm text-primary hover:underline font-semibold" onclick="triggerToast('Opening digital bank voucher #VCH-2026-904')">
+          View Slip
+        </button>
+</div>
+</div>
+</section>
+<!-- Sticky Bottom Quick Primary Bar for Fast Interaction -->
+<div class="sticky bottom-0 w-full p-space-sm bg-surface-container-lowest/95 backdrop-blur-md shadow-lg flex items-center gap-space-sm z-30">
+<button class="flex-1 h-12 rounded-xl bg-secondary-container hover:bg-secondary-fixed text-on-secondary-fixed flex items-center justify-center gap-space-xs font-label-lg text-label-lg font-bold transition-all active:scale-[0.98]" onclick="triggerToast('Opening WhatsApp invoice sender...')">
+<span class="material-symbols-outlined text-[20px]">send</span>
+<span>Share to Client</span>
+</button>
+<button class="w-12 h-12 rounded-xl bg-primary text-on-primary flex items-center justify-center hover:opacity-90 active:scale-95 transition-all" onclick="triggerToast('PDF downloaded to local device')">
+<span class="material-symbols-outlined text-[22px]">download</span>
+</button>
+</div>
+</div>
+<script>
+  function triggerToast(message) {
+    const toast = document.getElementById('toast');
+    const toastText = document.getElementById('toast-text');
+    if (!toast || !toastText) return;
+    
+    toastText.textContent = message;
+    toast.classList.remove('opacity-0', 'translate-y-[-8px]', 'pointer-events-none');
+    toast.classList.add('opacity-100', 'translate-y-0');
+    
+    setTimeout(() => {
+      toast.classList.remove('opacity-100', 'translate-y-0');
+      toast.classList.add('opacity-0', 'translate-y-[-8px]', 'pointer-events-none');
+    }, 2400);
+  }
+
+  function toggleMenu() {
+    const menu = document.getElementById('more-menu');
+    if (menu) {
+      menu.classList.toggle('hidden');
+    }
+  }
+
+  // Dismiss dropdown menu when clicking elsewhere
+  document.addEventListener('click', function(event) {
+    const menu = document.getElementById('more-menu');
+    const btn = document.getElementById('more-menu-btn');
+    if (menu && !menu.classList.contains('hidden')) {
+      if (!btn.contains(event.target)) {
+        menu.classList.add('hidden');
+      }
+    }
+  });
+</script></main>
+
+</body></html>

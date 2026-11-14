@@ -1,0 +1,427 @@
+﻿@layer base {
+  html, body {
+    margin: 0;
+    padding: 0;
+    min-height: 100vh;
+    font-family: 'Inter', sans-serif;
+  }
+  body {
+    overscroll-behavior-y: none;
+    -webkit-tap-highlight-color: transparent;
+  }
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: #cac5cc;
+  border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #7a767c;
+}
+
+/* Number tabular alignment for financial precision */
+.font-tabular {
+  font-variant-numeric: tabular-nums;
+}
+
+/* Print Styles for Tax Invoice - Guaranteed Single Page A4 Layout */
+@media print {
+  @page {
+    size: A4 portrait;
+    margin: 5mm 6mm;
+  }
+  html, body {
+    margin: 0 !important;
+    padding: 0 !important;
+    background: #ffffff !important;
+    color: #000000 !important;
+    font-size: 10px !important;
+    line-height: 1.2 !important;
+    -webkit-print-color-adjust: exact !important;
+    print-color-adjust: exact !important;
+    height: 100% !important;
+  }
+  /* Hide UI elements during print */
+  aside, header, #sticky-bottom-bar, #toast, .no-print, #quick-actions-bar, #ai-modal, #whatsapp-modal, #eway-modal, #ai-drawer, #notifications-popover, #company-switch-dropdown {
+    display: none !important;
+  }
+  .pl-64, .lg\:pl-64 {
+    padding-left: 0 !important;
+  }
+  main {
+    padding: 0 !important;
+    margin: 0 !important;
+    min-height: auto !important;
+  }
+  #view-invoice-detail {
+    padding: 0 !important;
+    margin: 0 !important;
+    display: block !important;
+    padding-bottom: 0 !important;
+  }
+  #invoice-detail-card {
+    box-shadow: none !important;
+    border: 1.5px solid #1e293b !important;
+    border-radius: 4px !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 0 auto !important;
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+    page-break-after: avoid !important;
+  }
+  table {
+    border-collapse: collapse !important;
+    width: 100% !important;
+  }
+  th, td {
+    border-color: #cbd5e1 !important;
+  }
+  tr {
+    page-break-inside: avoid !important;
+    break-inside: avoid !important;
+  }
+}
+
+/* Subtle pulse glow for AI */
+@keyframes aiGlow {
+  0%, 100% {
+    box-shadow: 0 0 14px 2px rgba(117, 70, 232, 0.35);
+  }
+  50% {
+    box-shadow: 0 0 22px 6px rgba(117, 70, 232, 0.6);
+  }
+}
+
+.ai-glow {
+  animation: aiGlow 3s ease-in-out infinite;
+}
+
+/* Active navigation transition */
+.nav-transition {
+  transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ======================================================== */
+/* COLOR MATCH THEME ENGINE - NO MORE BLUE */
+/* ======================================================== */
+:root, html[data-theme="emerald"] {
+  --color-accent: #059669; /* Emerald Green (Accounting & Compliance) */
+  --color-accent-hover: #047857;
+  --color-accent-light: #ecfdf5;
+  --color-accent-border: #a7f3d0;
+  --color-accent-text: #065f46;
+  --color-sidebar-active: #064e3b;
+  --color-accent-ring: rgba(5, 150, 105, 0.25);
+  --color-theme-name: "Emerald";
+}
+
+html[data-theme="teal"] {
+  --color-accent: #0d9488; /* Deep Teal (Modern Fintech) */
+  --color-accent-hover: #0f766e;
+  --color-accent-light: #f0fdfa;
+  --color-accent-border: #99f6e4;
+  --color-accent-text: #115e59;
+  --color-sidebar-active: #134e4a;
+  --color-accent-ring: rgba(13, 148, 136, 0.25);
+  --color-theme-name: "Teal";
+}
+
+html[data-theme="amber"] {
+  --color-accent: #d97706; /* Warm Amber Gold (GimBooks Classic) */
+  --color-accent-hover: #b45309;
+  --color-accent-light: #fffbeb;
+  --color-accent-border: #fde68a;
+  --color-accent-text: #92400e;
+  --color-sidebar-active: #78350f;
+  --color-accent-ring: rgba(217, 119, 6, 0.25);
+  --color-theme-name: "Amber";
+}
+
+html[data-theme="crimson"] {
+  --color-accent: #be123c; /* Royal Crimson / Maroon (Executive) */
+  --color-accent-hover: #9f1239;
+  --color-accent-light: #fff1f2;
+  --color-accent-border: #fecdd3;
+  --color-accent-text: #881337;
+  --color-sidebar-active: #4c0519;
+  --color-accent-ring: rgba(190, 18, 60, 0.25);
+  --color-theme-name: "Crimson";
+}
+
+html[data-theme="obsidian"] {
+  --color-accent: #27272a; /* Obsidian Slate (Minimalist Luxury) */
+  --color-accent-hover: #18181b;
+  --color-accent-light: #f4f4f5;
+  --color-accent-border: #d4d4d8;
+  --color-accent-text: #09090b;
+  --color-sidebar-active: #27272a;
+  --color-accent-ring: rgba(39, 39, 42, 0.25);
+  --color-theme-name: "Obsidian";
+}
+
+/* Section and Card Headers: Crisp Dark Black */
+[class*="text-[#533db5]"],
+.text-purple-300,
+.text-purple-400,
+.text-purple-600,
+.text-purple-700,
+.text-indigo-600,
+.text-indigo-700,
+.text-blue-600 {
+  color: #0f172a !important;
+}
+
+.dark [class*="text-[#533db5]"],
+.dark .text-purple-300,
+.dark .text-purple-400,
+.dark .text-purple-600,
+.dark .text-purple-700,
+.dark .text-indigo-600,
+.dark .text-indigo-700,
+.dark .text-blue-600 {
+  color: #f8fafc !important;
+}
+
+[class*="bg-[#533db5]"],
+[class*="bg-[#4338ca]"],
+.bg-primary-theme {
+  background-color: var(--color-accent) !important;
+  color: #ffffff !important;
+}
+
+[class*="bg-[#f0effb]"],
+[class*="bg-purple-50"],
+[class*="bg-purple-100"],
+[class*="bg-indigo-50"],
+[class*="bg-indigo-100"] {
+  background-color: var(--color-accent-light) !important;
+}
+
+[class*="border-[#533db5]"],
+[class*="border-purple-200"],
+[class*="border-purple-400"],
+[class*="border-indigo-200"],
+[class*="hover:border-blue-500"]:hover,
+[class*="hover:border-purple-500"]:hover {
+  border-color: var(--color-accent-border) !important;
+}
+
+[class*="hover:bg-[#43309a]"]:hover,
+[class*="hover:bg-[#3730a3]"]:hover,
+[class*="hover:bg-purple-700"]:hover {
+  background-color: var(--color-accent-hover) !important;
+}
+
+/* Active Tabs and Underline Bars */
+.delivery-challan-tab.border-primary,
+.quotation-tab.border-primary,
+.receipt-tab.border-primary,
+.refund-tab.border-primary,
+.tds-tab.border-primary,
+.proforma-tab.border-primary {
+  border-bottom-color: var(--color-accent) !important;
+}
+
+.challan-tab-bar,
+.receipt-tab-bar,
+.proforma-tab-bar,
+.quote-tab-bar,
+.refund-tab-bar,
+.tds-tab-bar {
+  background-color: var(--color-accent) !important;
+}
+
+/* Sidebar Active Nav Item */
+.bg-tertiary-container {
+  background-color: var(--color-sidebar-active) !important;
+}
+
+/* All Primary Document Numbers & General Text MUST BE SOLID BLACK */
+.text-primary,
+.doc-link,
+.font-tabular {
+  color: #000000 !important;
+}
+
+.dark .text-primary,
+.dark .doc-link,
+.dark .font-tabular {
+  color: #ffffff !important;
+}
+
+/* Ensure table cells, document codes and general table content default to solid black */
+tbody td,
+tbody td button,
+tbody td a,
+tbody td .font-mono,
+.text-on-surface {
+  color: #000000;
+}
+
+.dark tbody td,
+.dark tbody td button,
+.dark tbody td a,
+.dark tbody td .font-mono,
+.dark .text-on-surface {
+  color: #ffffff;
+}
+
+button.border-primary\/30,
+span.border-primary\/30 {
+  border-color: var(--color-accent-border) !important;
+}
+
+.bg-primary\/10,
+.bg-primary\/20 {
+  background-color: var(--color-accent-light) !important;
+}
+
+/* Dark Mode Harmonization */
+.dark [class*="bg-[#f0effb]"],
+.dark [class*="bg-purple-950"],
+.dark [class*="bg-indigo-950"] {
+  background-color: rgba(5, 150, 105, 0.15) !important;
+}
+
+.dark [class*="border-purple-800"],
+.dark [class*="border-indigo-800"] {
+  border-color: rgba(5, 150, 105, 0.3) !important;
+}
+
+
+/* ======================================================== */
+/* TYPOGRAPHY HIERARCHY SPECIFICATION                       */
+/* 1. Best Choice: Inter                                    */
+/* 2. Manrope                                               */
+/* 3. Plus Jakarta Sans                                     */
+/* 4. Roboto                                                */
+/* 5. DM Sans                                               */
+/*                                                          */
+/* Hierarchy Weights:                                       */
+/* - Page headings: Inter SemiBold (600)                    */
+/* - Table headers: Inter SemiBold (600)                    */
+/* - Table content: Inter Medium (500)                      */
+/* - Labels and descriptions: Inter Regular (400)           */
+/* - Status badges: Inter SemiBold (600)                    */
+/* ======================================================== */
+
+:root, html[data-font="inter"] {
+  --font-app: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+html[data-font="manrope"] {
+  --font-app: 'Manrope', -apple-system, BlinkMacSystemFont, sans-serif;
+}
+html[data-font="plus-jakarta-sans"] {
+  --font-app: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+}
+html[data-font="roboto"] {
+  --font-app: 'Roboto', -apple-system, BlinkMacSystemFont, sans-serif;
+}
+html[data-font="dm-sans"] {
+  --font-app: 'DM Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+body, html, input, button, select, textarea {
+  font-family: var(--font-app, 'Inter', sans-serif);
+}
+
+/* 1. Page Headings: Inter SemiBold (600) */
+h1, h2, h3, h4,
+.page-heading,
+.font-headline-xl,
+.font-headline-lg,
+.font-headline-md,
+[class*="text-headline-"] {
+  font-family: var(--font-app, 'Inter', sans-serif) !important;
+  font-weight: 600 !important;
+}
+
+/* 2. Table Headers: Inter SemiBold (600) */
+thead th,
+table th,
+.table-header {
+  font-family: var(--font-app, 'Inter', sans-serif) !important;
+  font-weight: 600 !important;
+}
+
+/* 3. Table Content: Inter Medium (500) */
+tbody td,
+tbody tr,
+tbody td a,
+tbody td button,
+tbody td span:not([class*="rounded-full"]):not(.material-symbols-outlined),
+tbody td div,
+.table-content {
+  font-family: var(--font-app, 'Inter', sans-serif);
+  font-weight: 500;
+}
+
+/* Tabular Numbers for Financial Calculations */
+.font-tabular,
+tbody td.font-tabular,
+tbody td .font-tabular {
+  font-variant-numeric: tabular-nums !important;
+  font-feature-settings: "tnum" 1 !important;
+}
+
+/* 4. Labels and Descriptions: Inter Regular (400) */
+label,
+.field-label,
+.text-label,
+p,
+.description,
+.text-outline:not(.material-symbols-outlined),
+.text-on-surface-variant:not(.material-symbols-outlined),
+.text-body-sm,
+.text-body-md,
+.text-body-lg,
+span.text-outline:not(.material-symbols-outlined),
+span.text-on-surface-variant:not(.material-symbols-outlined),
+div.text-outline {
+  font-family: var(--font-app, 'Inter', sans-serif);
+  font-weight: 400 !important;
+}
+
+/* 5. Status Badges: Inter SemiBold (600) */
+.status-badge,
+span[class*="rounded-full"]:not(.material-symbols-outlined),
+span[class*="bg-emerald-"]:not(.material-symbols-outlined),
+span[class*="bg-amber-"]:not(.material-symbols-outlined),
+span[class*="bg-rose-"]:not(.material-symbols-outlined),
+span[class*="bg-red-"]:not(.material-symbols-outlined),
+span[class*="bg-zinc-"]:not(.material-symbols-outlined),
+span[class*="bg-slate-"]:not(.material-symbols-outlined),
+span[class*="bg-blue-"]:not(.material-symbols-outlined),
+span[class*="bg-purple-"]:not(.material-symbols-outlined),
+span[class*="bg-indigo-"]:not(.material-symbols-outlined) {
+  font-family: var(--font-app, 'Inter', sans-serif) !important;
+  font-weight: 600 !important;
+}
+
+/* Material Icons Font Protection: Never override icon glyphs */
+.material-symbols-outlined,
+span.material-symbols-outlined,
+i.material-symbols-outlined,
+[class*="material-symbols"] {
+  font-family: 'Material Symbols Outlined' !important;
+  font-weight: normal !important;
+  font-style: normal !important;
+  line-height: 1 !important;
+  letter-spacing: normal !important;
+  text-transform: none !important;
+  display: inline-block !important;
+  white-space: nowrap !important;
+  word-wrap: normal !important;
+  direction: ltr !important;
+  -webkit-font-feature-settings: 'liga' !important;
+  -webkit-font-smoothing: antialiased !important;
+}
