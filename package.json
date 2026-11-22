@@ -1,0 +1,9 @@
+{
+  "name": "gst-billing",
+  "version": "1.0.0",
+  "description": "GST Billing & Invoice Management Platform",
+  "main": "api/mongodb.js",
+  "dependencies": {
+    "mongodb": "^6.5.0"
+  }
+}

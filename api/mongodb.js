@@ -17,7 +17,7 @@ module.exports = async function handler(req, res) {
 
   const body = req.body || {};
   const { action, uri, dbName, data } = body;
-  const mongoUri = uri || process.env.MONGODB_URI;
+  const mongoUri = uri || process.env.MONGODB_URI || 'mongodb+srv://prakashsk119_db_user:49f8f007-ae31-4dd1-aab3-268587235e38@cluster0.smze9z7.mongodb.net/gst_billing?retryWrites=true&w=majority';
   const targetDb = dbName || process.env.MONGODB_DB || 'gst_billing';
 
   if (!mongoUri) {

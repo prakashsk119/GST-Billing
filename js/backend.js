@@ -6,7 +6,7 @@
 
 const DEFAULT_SUPABASE_URL = 'https://bxcsrfuxrjepjtctefoq.supabase.co';
 const DEFAULT_MONGODB_DB = 'gst_billing';
-const DEFAULT_MONGODB_URI = 'mongodb+srv://prakashsk119_db_user:<db_password>@cluster0.smze9z7.mongodb.net/gst_billing?retryWrites=true&w=majority';
+const DEFAULT_MONGODB_URI = 'mongodb+srv://prakashsk119_db_user:49f8f007-ae31-4dd1-aab3-268587235e38@cluster0.smze9z7.mongodb.net/gst_billing?retryWrites=true&w=majority';
 
 let activeBackendProvider = localStorage.getItem('gst_backend_provider') || 'mongodb';
 let supabaseClient = null;
@@ -34,10 +34,11 @@ function initAllBackends() {
 // 2. MONGODB BACKEND CONNECTOR
 // ====================================================================
 function initMongoDBBackend() {
-  const savedUri = localStorage.getItem('gst_mongodb_uri') || '';
+  const savedUri = localStorage.getItem('gst_mongodb_uri') || DEFAULT_MONGODB_URI;
   const savedDb = localStorage.getItem('gst_mongodb_db') || DEFAULT_MONGODB_DB;
 
-  if (savedUri) {
+  if (savedUri && !savedUri.includes('<db_password>')) {
+    localStorage.setItem('gst_mongodb_uri', savedUri);
     testMongoDBConnection(false);
   } else {
     // If MongoDB is the active provider and not yet configured, show status
@@ -625,11 +626,15 @@ function openBackendModal() {
   // Fill MongoDB inputs
   const mongoUriInput = document.getElementById('mongodb-uri-input');
   const mongoDbInput = document.getElementById('mongodb-db-input');
+  const mongoPwdInput = document.getElementById('mongodb-password-quick');
   if (mongoUriInput) {
     mongoUriInput.value = localStorage.getItem('gst_mongodb_uri') || DEFAULT_MONGODB_URI;
   }
   if (mongoDbInput) {
     mongoDbInput.value = localStorage.getItem('gst_mongodb_db') || DEFAULT_MONGODB_DB;
+  }
+  if (mongoPwdInput) {
+    mongoPwdInput.value = '49f8f007-ae31-4dd1-aab3-268587235e38';
   }
 
   // Fill Supabase inputs
@@ -651,7 +656,7 @@ function closeBackendModal() {
 function applyMongoPassword(pwd) {
   const uriInput = document.getElementById('mongodb-uri-input');
   if (!uriInput) return;
-  const baseUri = DEFAULT_MONGODB_URI;
+  const baseUri = 'mongodb+srv://prakashsk119_db_user:<db_password>@cluster0.smze9z7.mongodb.net/gst_billing?retryWrites=true&w=majority';
   if (pwd) {
     const encoded = encodeURIComponent(pwd);
     uriInput.value = baseUri.replace('<db_password>', encoded);
