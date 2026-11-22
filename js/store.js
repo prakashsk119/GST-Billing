@@ -1,25 +1,38 @@
 ﻿// GST Billing Platform - Store & Data Management
-const GST_STORE_KEY = 'gst_billing_data_v2';
+const GST_STORE_KEY = 'gst_billing_data_v3';
 
 const defaultSeller = {
-  companyName: 'GST Billing Solutions Pvt Ltd',
-  tradeName: 'Apex Enterprise',
-  gstin: '27AAAAA0000A1Z5',
-  pan: 'AAAAA0000A',
-  state: 'Maharashtra',
-  stateCode: '27',
-  address: 'Office 402, Pinnacle Business Bay, Baner High Street, Pune, Maharashtra - 411045',
-  phone: '+91 98765 43210',
-  email: 'billing@gstsolutions.in',
-  bankName: 'HDFC Bank Ltd',
-  branch: 'Baner Branch',
-  accountNumber: '50200084920192',
-  ifsc: 'HDFC0001429',
-  authorizedSignatory: 'R. Sen (Director)',
+  companyName: 'SASMITH TRADERS',
+  tradeName: 'SASMITH TRADERS',
+  gstin: '33BZRPS8264H1ZN',
+  pan: 'BZRPS8264H',
+  state: 'Tamil Nadu',
+  stateCode: '33',
+  address: '6/199 H KOVAI MAIN ROAD KG PALAYAM, Coimbatore, Tamil Nadu, 641697',
+  phone: '9976644440',
+  email: 'sathishnivi8866@gmail.com',
+  bankName: 'HDFC Bank',
+  branch: 'ANNUR',
+  accountNumber: '50200062410936',
+  ifsc: 'HDFC0008753',
+  authorizedSignatory: 'Authorised Signatory',
   fy: 'FY 2026-27'
 };
 
 const defaultCustomers = [
+  {
+    id: 'cust-kanthasamy',
+    name: 'Mr. Kanthasamy',
+    gstin: 'URP',
+    state: 'Tamil Nadu',
+    stateCode: '33',
+    address: 'Onnakarasampalayam, Annur., Coimbatore, Tamil Nadu, 641697',
+    dispatchAddress: 'Onnakarasampalayam, Annur., Coimbatore, Tamil Nadu, 641697',
+    category: 'Unregistered Person (URP)',
+    contactPerson: 'Mr. Kanthasamy',
+    email: 'kanthasamy@example.com',
+    phone: '9842371148'
+  },
   {
     id: 'cust-1',
     name: 'Reliance Retail Limited',
@@ -88,6 +101,7 @@ const defaultCustomers = [
 ];
 
 const defaultCatalog = [
+  { id: 'prod-waste-fiber', name: 'WASTE FIBER', hsn: '5305', isService: false, unit: 'BAG', defaultRate: 245.00, defaultGstRate: 0, desc: 'WASTE FIBER • HSN/SAC: 5305 • Unit: BAG' },
   { id: 'prod-1', name: 'Enterprise Cloud Server Hosting', hsn: '998315', isService: true, unit: 'Unit', defaultRate: 45000, defaultGstRate: 18, desc: 'Annual SLA License, Dedicated CPU & Cloud Storage' },
   { id: 'prod-2', name: 'GST Automated e-Invoicing API Gateway', hsn: '998313', isService: true, unit: 'Packs', defaultRate: 10000, defaultGstRate: 18, desc: 'Integration Pack (10k docs) with real-time IRN generation' },
   { id: 'prod-3', name: 'Compliance Onboarding & Training Session', hsn: '998319', isService: true, unit: 'Session', defaultRate: 6339, defaultGstRate: 18, desc: 'Certified CA Consultation & Staff Onboarding' },
@@ -241,6 +255,62 @@ const defaultPurchases = [
 ];
 
 const defaultInvoices = [
+  {
+    id: 'SSS-INV-26-27-345',
+    invoiceNumber: 'SSS/INV/26-27/345',
+    docType: 'TAX INVOICE',
+    docCategory: 'ORIGINAL FOR RECIPIENT',
+    issueDate: '2026-11-11',
+    issueTime: '11:00 AM',
+    dueDate: '2026-11-26',
+    customerId: 'cust-kanthasamy',
+    customerName: 'Mr. Kanthasamy',
+    customerGstin: 'URP',
+    customerPhone: '9842371148',
+    customerAddress: 'Onnakarasampalayam, Annur., Coimbatore, Tamil Nadu, 641697',
+    dispatchAddress: 'Onnakarasampalayam, Annur., Coimbatore, Tamil Nadu, 641697',
+    placeOfSupply: '33 - Tamil Nadu',
+    stateCode: '33',
+    reverseCharge: 'NO',
+    vehicleNumber: 'TN66K4834',
+    transportMode: 'Road',
+    salesPerson: 'selvam',
+    isEInvoiced: false,
+    status: 'UNPAID',
+    items: [
+      {
+        id: 'item-sss-1',
+        srNo: 1,
+        name: 'WASTE FIBER',
+        description: 'HSN/SAC: 5305',
+        hsn: '5305',
+        quantity: 67,
+        unit: 'BAG',
+        rate: 245.00,
+        discountPercent: 0,
+        taxableAmount: 16415.00,
+        gstRate: 0,
+        cgstRate: 0,
+        sgstRate: 0,
+        igstRate: 0,
+        cgstAmount: 0.00,
+        sgstAmount: 0.00,
+        igstAmount: 0.00,
+        total: 16415.00
+      }
+    ],
+    taxableSubtotal: 16415.00,
+    cgstTotal: 0.00,
+    sgstTotal: 0.00,
+    igstTotal: 0.00,
+    roundOff: 0.00,
+    grandTotal: 16415.00,
+    amountInWords: 'Sixteen Thousand Four Hundred Fifteen Rupees Only',
+    paidAmount: 0.00,
+    dueAmount: 16415.00,
+    settlementDetails: null,
+    terms: '1. This is an electronically generated document.\n2. All disputes are subject to Coimbatore jurisdiction.'
+  },
   {
     id: 'INV-2026-089',
     invoiceNumber: 'INV-2026-089',
@@ -1438,13 +1508,31 @@ const defaultDeliveryChallans = [
 
 const defaultEwaybills = [
   {
+    id: 'EWB-241088764209',
+    ewbNumber: '241088764209',
+    date: '2026-11-11 11:30 AM',
+    docType: 'Tax Invoice',
+    docNo: 'SSS/INV/26-27/345',
+    fromGstin: '33BZRPS8264H1ZN',
+    fromTradeName: 'SASMITH TRADERS (Coimbatore)',
+    toGstin: 'URP',
+    toTradeName: 'Mr. Kanthasamy',
+    toPlace: 'Annur, Coimbatore, Tamil Nadu',
+    distance: 25,
+    vehicleNo: 'TN66K4834',
+    mode: 'Road',
+    validUntil: '2026-11-13 11:59 PM',
+    status: 'ACTIVE',
+    totalValue: 16415.00
+  },
+  {
     id: 'EWB-241088764210',
     ewbNumber: '241088764210',
     date: '2026-11-13 10:30 AM',
     docType: 'Tax Invoice',
     docNo: 'INV-2026-089',
-    fromGstin: '27AAAAA0000A1Z5',
-    fromTradeName: 'Apex Enterprise (Mumbai)',
+    fromGstin: '33BZRPS8264H1ZN',
+    fromTradeName: 'SASMITH TRADERS',
     toGstin: '27AABCR1234F1ZX',
     toTradeName: 'Reliance Retail Limited',
     toPlace: 'Mumbai, Maharashtra',
@@ -1477,12 +1565,30 @@ const defaultEwaybills = [
 
 const defaultBankAccounts = [
   {
+    id: 'acc_hdfc_1',
+    type: 'BANK',
+    name: 'HDFC Bank',
+    isDefault: true,
+    subtitle: 'Current Account - ANNUR Branch',
+    accountHolder: 'SASMITH TRADERS',
+    accountNumber: '50200062410936',
+    ifsc: 'HDFC0008753',
+    branchName: 'ANNUR',
+    openingBalance: 16415,
+    openingBalanceDate: '2026-11-11',
+    amountInBank: 16415,
+    amountInGimbooks: 16415,
+    uncategorizedCount: 0,
+    iban: '',
+    swift: ''
+  },
+  {
     id: 'acc_cash_1',
     type: 'CASH',
     name: 'Cash',
-    isDefault: true,
+    isDefault: false,
     subtitle: 'Cash account',
-    accountHolder: 'Apex Enterprise',
+    accountHolder: 'SASMITH TRADERS',
     accountNumber: '',
     ifsc: '',
     branchName: '',
@@ -1535,7 +1641,7 @@ class GSTStore {
     this.dateRangeFilter = 'ALL'; // ALL, TODAY, THIS_MONTH, LAST_MONTH, Q1, Q2, Q3, FY
     this.chartPeriod = 'monthly'; // monthly, quarterly
     this.selectedInvoices = new Set();
-    this.activeInvoiceId = 'INV-2026-089';
+    this.activeInvoiceId = 'SSS-INV-26-27-345';
     this.activeQuotationId = 'QT-2026-041';
     this.activeReceiptId = 'REC-2026-001';
     this.loadFromStorage();
@@ -1582,8 +1688,28 @@ class GSTStore {
         if (parsed.purchases && parsed.purchases.length > 0) {
           this.purchases = parsed.purchases;
         }
+        if (parsed.bankAccounts && parsed.bankAccounts.length > 0) {
+          this.bankAccounts = parsed.bankAccounts;
+        }
         if (parsed.seller) {
-          this.seller = parsed.seller;
+          if (parsed.seller.companyName === 'SASMITH TRADERS') {
+            this.seller = parsed.seller;
+          } else {
+            this.seller = defaultSeller;
+          }
+        }
+        // Ensure flagship defaults exist
+        if (!this.invoices.some(inv => inv.id === 'SSS-INV-26-27-345')) {
+          this.invoices.unshift(defaultInvoices[0]);
+        }
+        if (!this.customers.some(c => c.id === 'cust-kanthasamy')) {
+          this.customers.unshift(defaultCustomers[0]);
+        }
+        if (!this.bankAccounts.some(b => b.accountNumber === '50200062410936')) {
+          this.bankAccounts.unshift(defaultBankAccounts[0]);
+        }
+        if (!this.catalog.some(p => p.id === 'prod-waste-fiber')) {
+          this.catalog.unshift(defaultCatalog[0]);
         }
       }
     } catch (e) {
@@ -2786,7 +2912,7 @@ class GSTStore {
       name: acc.name || 'New Account',
       isDefault: false,
       subtitle: acc.type === 'CASH' ? 'Cash account' : (acc.accountNumber ? `A/c: **** ${acc.accountNumber.slice(-4)} • ${acc.branchName || 'Branch'}` : 'Bank account'),
-      accountHolder: acc.accountHolder || this.seller.tradeName || 'Apex Enterprise',
+      accountHolder: acc.accountHolder || this.seller.tradeName || 'SASMITH TRADERS',
       accountNumber: acc.accountNumber || '',
       ifsc: acc.ifsc || '',
       branchName: acc.branchName || '',

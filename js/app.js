@@ -1,4 +1,4 @@
-// GST Billing Platform - Application Controller & Dynamic Router
+﻿// GST Billing Platform - Application Controller & Dynamic Router
 
 let currentView = 'dashboard';
 let activeCreateInvoiceItems = [];
@@ -1346,13 +1346,36 @@ function renderInvoiceDetail(invId) {
   const isIntraState = inv.stateCode === seller.stateCode;
 
   // Header meta
-  document.getElementById('detail-inv-no').textContent = inv.invoiceNumber;
-  document.getElementById('detail-status-badge').innerHTML = getStatusBadgeHTML(inv.status);
-  document.getElementById('detail-date').textContent = `Generated on ${inv.issueDate}`;
+  const invNoEl = document.getElementById('detail-inv-no');
+  if (invNoEl) invNoEl.textContent = inv.invoiceNumber;
+
+  const statusBadge = document.getElementById('detail-status-badge');
+  if (statusBadge) statusBadge.innerHTML = getStatusBadgeHTML(inv.status);
+
+  const dateEl = document.getElementById('detail-date');
+  if (dateEl) {
+    const dParts = (inv.issueDate || '').split('-');
+    const formattedDate = dParts.length === 3 && dParts[0].length === 4 ? `${dParts[2]}-${dParts[1]}-${dParts[0]}` : inv.issueDate;
+    dateEl.textContent = formattedDate;
+  }
+
+  // Transport & Dispatch meta
+  const revEl = document.getElementById('detail-reverse-charge');
+  if (revEl) revEl.textContent = inv.reverseCharge || 'NO';
+
+  const vehEl = document.getElementById('detail-vehicle-no');
+  if (vehEl) vehEl.textContent = inv.vehicleNumber || 'TN66K4834';
+
+  const transEl = document.getElementById('detail-transport-mode');
+  if (transEl) transEl.textContent = inv.transportMode || 'Road';
+
+  const spEl = document.getElementById('detail-salesperson');
+  if (spEl) spEl.textContent = inv.salesPerson || 'selvam';
 
   // IRN Strip
   const shortIrn = inv.irn ? `${inv.irn.substring(0, 14)}...${inv.irn.substring(56)}` : 'IRN Verified';
-  document.getElementById('detail-irn-text').textContent = `IRN: ${shortIrn}`;
+  const irnTextEl = document.getElementById('detail-irn-text');
+  if (irnTextEl) irnTextEl.textContent = `IRN: ${shortIrn}`;
   const copyBtn = document.getElementById('detail-irn-copy-btn');
   if (copyBtn) {
     copyBtn.onclick = () => {
@@ -1362,46 +1385,125 @@ function renderInvoiceDetail(invId) {
   }
 
   // Seller Details
-  document.getElementById('detail-seller-name').textContent = seller.companyName;
-  document.getElementById('detail-seller-address').textContent = seller.address;
-  document.getElementById('detail-seller-gstin').textContent = seller.gstin;
-  document.getElementById('detail-seller-state').textContent = `${seller.state} (${seller.stateCode})`;
-  document.getElementById('detail-seller-pan').textContent = seller.pan;
+  const selNameEl = document.getElementById('detail-seller-name');
+  if (selNameEl) selNameEl.textContent = seller.companyName;
+
+  const selAddrEl = document.getElementById('detail-seller-address');
+  if (selAddrEl) selAddrEl.textContent = seller.address;
+
+  const selEmailEl = document.getElementById('detail-seller-email');
+  if (selEmailEl) selEmailEl.textContent = seller.email || 'sathishnivi8866@gmail.com';
+
+  const selGstinEl = document.getElementById('detail-seller-gstin');
+  if (selGstinEl) selGstinEl.textContent = seller.gstin;
+
+  const selStateCodeEl = document.getElementById('detail-seller-state-code');
+  if (selStateCodeEl) selStateCodeEl.textContent = seller.stateCode || '33';
+
+  const selStateEl = document.getElementById('detail-seller-state');
+  if (selStateEl) selStateEl.textContent = `${seller.state} (${seller.stateCode})`;
+
+  const selPanEl = document.getElementById('detail-seller-pan');
+  if (selPanEl) selPanEl.textContent = seller.pan;
+
+  const selPhoneEl = document.getElementById('detail-seller-phone');
+  if (selPhoneEl) selPhoneEl.textContent = seller.phone || '9976644440';
 
   // Buyer Details
-  document.getElementById('detail-buyer-name').textContent = inv.customerName;
-  document.getElementById('detail-buyer-address').textContent = inv.customerAddress;
-  document.getElementById('detail-buyer-gstin').textContent = inv.customerGstin;
-  document.getElementById('detail-buyer-state-pos').textContent = `State: ${inv.placeOfSupply} | POS: ${inv.stateCode || '27'}`;
-  document.getElementById('detail-dispatch-address').textContent = inv.dispatchAddress || inv.customerAddress;
-  document.getElementById('detail-due-date').textContent = inv.dueDate;
+  const buyNameEl = document.getElementById('detail-buyer-name');
+  if (buyNameEl) buyNameEl.textContent = inv.customerName;
 
-  // Items List
+  const buyAddrEl = document.getElementById('detail-buyer-address');
+  if (buyAddrEl) buyAddrEl.textContent = inv.customerAddress;
+
+  const buyPhoneEl = document.getElementById('detail-buyer-phone');
+  if (buyPhoneEl) buyPhoneEl.textContent = inv.customerPhone || '9842371148';
+
+  const buyGstinEl = document.getElementById('detail-buyer-gstin');
+  if (buyGstinEl) buyGstinEl.textContent = inv.customerGstin || 'URP';
+
+  const buyStateCodeEl = document.getElementById('detail-buyer-state-code');
+  if (buyStateCodeEl) buyStateCodeEl.textContent = inv.stateCode || '33';
+
+  const buyStateEl = document.getElementById('detail-buyer-state');
+  if (buyStateEl) buyStateEl.textContent = inv.placeOfSupply ? inv.placeOfSupply.replace(/^\d+\s*-\s*/, '') : 'Tamil Nadu';
+
+  const buyStatePosEl = document.getElementById('detail-buyer-state-pos');
+  if (buyStatePosEl) buyStatePosEl.textContent = `State: ${inv.placeOfSupply} | POS: ${inv.stateCode || '33'}`;
+
+  // Consignee Details
+  const conNameEl = document.getElementById('detail-consignee-name');
+  if (conNameEl) conNameEl.textContent = inv.consigneeName || inv.customerName;
+
+  const conAddrEl = document.getElementById('detail-consignee-address');
+  if (conAddrEl) conAddrEl.textContent = inv.dispatchAddress || inv.customerAddress;
+
+  const conStateEl = document.getElementById('detail-consignee-state');
+  if (conStateEl) conStateEl.textContent = inv.consigneeState || (inv.placeOfSupply ? inv.placeOfSupply.replace(/^\d+\s*-\s*/, '') : 'Tamil Nadu');
+
+  const dispatchAddrEl = document.getElementById('detail-dispatch-address');
+  if (dispatchAddrEl) dispatchAddrEl.textContent = inv.dispatchAddress || inv.customerAddress;
+
+  const dueDateEl = document.getElementById('detail-due-date');
+  if (dueDateEl) dueDateEl.textContent = inv.dueDate;
+
+  // Items List Table (with blue #e0edff tinted Taxable Value column and authentic vertical borders)
   const itemsContainer = document.getElementById('detail-items-container');
   if (itemsContainer) {
-    document.getElementById('detail-items-count').textContent = `${inv.items.length} Line Items`;
-    itemsContainer.innerHTML = inv.items.map((item, idx) => {
-      const taxRateDisplay = isIntraState
-        ? `<span class="font-bold text-on-surface block leading-tight text-[11px]">${item.gstRate || 18}%</span><span class="text-[9px] text-outline block leading-tight font-mono">₹${Math.round((item.cgstAmount || 0) + (item.sgstAmount || 0))}</span>`
-        : `<span class="font-bold text-on-surface block leading-tight text-[11px]">${item.gstRate || 18}% IGST</span><span class="text-[9px] text-outline block leading-tight font-mono">₹${Math.round(item.igstAmount || 0)}</span>`;
+    const itemsCountEl = document.getElementById('detail-items-count');
+    if (itemsCountEl) itemsCountEl.textContent = `${inv.items.length} Line Items`;
+
+    const itemRows = inv.items.map((item, idx) => {
+      const cgstR = (item.cgstRate || 0).toFixed(2) + '%';
+      const cgstA = (item.cgstAmount || 0).toFixed(2);
+      const sgstR = (item.sgstRate || 0).toFixed(2) + '%';
+      const sgstA = (item.sgstAmount || 0).toFixed(2);
+      const rateVal = Number(item.rate || 0).toFixed(2);
+      const taxVal = Number(item.taxableAmount || 0).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+      const totVal = Number(item.total || 0).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 
       return `
-        <tr class="hover:bg-surface-container-low transition-colors border-b border-outline-variant/20 text-[11px]">
-          <td class="py-2 px-2 text-center text-outline font-bold align-top border-r border-outline-variant/30">${idx + 1}</td>
-          <td class="py-2 px-3 align-top border-r border-outline-variant/30">
-            <span class="font-bold text-on-surface block text-[12px] leading-snug">${item.name}</span>
-            <span class="text-[10px] text-surface-tint block leading-snug mt-0.5">${item.description || ''}</span>
-          </td>
-          <td class="py-2 px-2 text-center font-mono text-primary font-semibold align-top border-r border-outline-variant/30">${item.hsn}</td>
-          <td class="py-2 px-2 text-center text-on-surface whitespace-nowrap align-top border-r border-outline-variant/30 font-medium">${item.quantity} ${item.unit}</td>
-          <td class="py-2 px-2 text-right font-tabular text-on-surface whitespace-nowrap align-top border-r border-outline-variant/30 font-medium">${formatINR(item.rate)}</td>
-          <td class="py-2 px-2 text-center font-tabular text-outline whitespace-nowrap align-top border-r border-outline-variant/30">${item.discountPercent > 0 ? `${item.discountPercent}%` : '-'}</td>
-          <td class="py-2 px-2 text-right font-tabular font-bold text-on-surface whitespace-nowrap align-top border-r border-outline-variant/30">${formatINR(item.taxableAmount)}</td>
-          <td class="py-2 px-2 text-center whitespace-nowrap align-top border-r border-outline-variant/30">${taxRateDisplay}</td>
-          <td class="py-2 px-3 text-right font-tabular font-bold text-on-surface whitespace-nowrap align-top">${formatINR(item.total)}</td>
+        <tr class="text-xs text-slate-900 divide-x divide-slate-900 border-b border-slate-900 hover:bg-slate-50/50">
+          <td class="p-1.5 text-center font-medium">${idx + 1}</td>
+          <td class="p-1.5 text-left font-bold text-slate-950">${item.name}</td>
+          <td class="p-1.5 text-center font-mono">${item.hsn}</td>
+          <td class="p-1.5 text-center font-medium">${item.quantity}</td>
+          <td class="p-1.5 text-center font-medium">${item.unit}</td>
+          <td class="p-1.5 text-right font-medium">${rateVal}</td>
+          <td class="p-1.5 text-right font-medium bg-[#e0edff]">${taxVal}</td>
+          <td class="p-1 text-center font-medium">${cgstR}</td>
+          <td class="p-1 text-right font-medium">${cgstA}</td>
+          <td class="p-1 text-center font-medium">${sgstR}</td>
+          <td class="p-1 text-right font-medium">${sgstA}</td>
+          <td class="p-1.5 text-right font-bold text-slate-950 whitespace-nowrap">₹ ${totVal}</td>
         </tr>
       `;
     }).join('');
+
+    // Add empty rows to match authentic paper invoice height
+    let emptyRows = '';
+    const minRows = 7;
+    const remaining = Math.max(0, minRows - inv.items.length);
+    for (let i = 0; i < remaining; i++) {
+      emptyRows += `
+        <tr class="text-xs divide-x divide-slate-900 border-b border-slate-900/30 h-8">
+          <td class="p-1.5 text-center text-transparent">-</td>
+          <td class="p-1.5"></td>
+          <td class="p-1.5"></td>
+          <td class="p-1.5"></td>
+          <td class="p-1.5"></td>
+          <td class="p-1.5"></td>
+          <td class="p-1.5 bg-[#e0edff]"></td>
+          <td class="p-1"></td>
+          <td class="p-1"></td>
+          <td class="p-1"></td>
+          <td class="p-1"></td>
+          <td class="p-1.5"></td>
+        </tr>
+      `;
+    }
+
+    itemsContainer.innerHTML = itemRows + emptyRows;
   }
 
   // Statutory HSN / SAC Tax Summary Grid
@@ -1430,8 +1532,18 @@ function renderInvoiceDetail(invId) {
   }
 
   // Financial Breakdown
-  document.getElementById('detail-taxable-subtotal').textContent = formatINR(inv.taxableSubtotal);
-  
+  const taxSubEl = document.getElementById('detail-taxable-subtotal');
+  if (taxSubEl) taxSubEl.textContent = `₹ ${inv.taxableSubtotal.toFixed(2)}`;
+
+  const grandSubEl = document.getElementById('detail-grand-total-sub');
+  if (grandSubEl) grandSubEl.textContent = `₹ ${inv.grandTotal.toFixed(1)}`;
+
+  const balDueEl = document.getElementById('detail-balance-due');
+  if (balDueEl) {
+    const dueAmt = inv.dueAmount !== undefined ? inv.dueAmount : inv.grandTotal;
+    balDueEl.textContent = `₹ ${dueAmt.toFixed(2)}`;
+  }
+
   const cgstRow = document.getElementById('detail-cgst-row');
   const sgstRow = document.getElementById('detail-sgst-row');
   const igstRow = document.getElementById('detail-igst-row');
@@ -1439,11 +1551,13 @@ function renderInvoiceDetail(invId) {
   if (isIntraState) {
     if (cgstRow) {
       cgstRow.classList.remove('hidden');
-      document.getElementById('detail-cgst-val').textContent = formatINR(inv.cgstTotal);
+      const cgstValEl = document.getElementById('detail-cgst-val');
+      if (cgstValEl) cgstValEl.textContent = formatINR(inv.cgstTotal);
     }
     if (sgstRow) {
       sgstRow.classList.remove('hidden');
-      document.getElementById('detail-sgst-val').textContent = formatINR(inv.sgstTotal);
+      const sgstValEl = document.getElementById('detail-sgst-val');
+      if (sgstValEl) sgstValEl.textContent = formatINR(inv.sgstTotal);
     }
     if (igstRow) igstRow.classList.add('hidden');
   } else {
@@ -1451,7 +1565,8 @@ function renderInvoiceDetail(invId) {
     if (sgstRow) sgstRow.classList.add('hidden');
     if (igstRow) {
       igstRow.classList.remove('hidden');
-      document.getElementById('detail-igst-val').textContent = formatINR(inv.igstTotal);
+      const igstValEl = document.getElementById('detail-igst-val');
+      if (igstValEl) igstValEl.textContent = formatINR(inv.igstTotal);
     }
   }
 
@@ -1461,16 +1576,36 @@ function renderInvoiceDetail(invId) {
     roundOffEl.textContent = (ro >= 0 ? '+' : '') + formatINR(ro);
   }
 
-  document.getElementById('detail-grand-total').textContent = formatINR(inv.grandTotal);
-  document.getElementById('detail-amount-words').textContent = inv.amountInWords || numberToWordsINR(inv.grandTotal);
+  const grandTotEl = document.getElementById('detail-grand-total');
+  if (grandTotEl) grandTotEl.textContent = `₹ ${inv.grandTotal.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+
+  const wordsEl = document.getElementById('detail-amount-words');
+  if (wordsEl) wordsEl.textContent = inv.amountInWords || numberToWordsINR(inv.grandTotal);
 
   // Bank Info
-  document.getElementById('detail-bank-name').textContent = seller.bankName;
-  document.getElementById('detail-bank-branch').textContent = seller.branch;
-  document.getElementById('detail-bank-account').textContent = seller.accountNumber;
-  document.getElementById('detail-bank-ifsc').textContent = seller.ifsc;
-  document.getElementById('detail-signatory').textContent = seller.authorizedSignatory;
-  document.getElementById('detail-company-seal-tag').textContent = `For ${seller.companyName}`;
+  const bankAccNameEl = document.getElementById('detail-bank-acc-name');
+  if (bankAccNameEl) bankAccNameEl.textContent = seller.companyName;
+
+  const bankNameEl = document.getElementById('detail-bank-name');
+  if (bankNameEl) bankNameEl.textContent = seller.bankName;
+
+  const bankBranchEl = document.getElementById('detail-bank-branch');
+  if (bankBranchEl) bankBranchEl.textContent = seller.branch;
+
+  const bankAccEl = document.getElementById('detail-bank-account');
+  if (bankAccEl) bankAccEl.textContent = seller.accountNumber;
+
+  const bankIfscEl = document.getElementById('detail-bank-ifsc');
+  if (bankIfscEl) bankIfscEl.textContent = seller.ifsc;
+
+  const sealEl = document.getElementById('detail-company-seal-tag');
+  if (sealEl) sealEl.textContent = `For, ${seller.companyName}`;
+
+  const sigEl = document.getElementById('detail-signatory');
+  if (sigEl) sigEl.textContent = seller.authorizedSignatory || 'Authorised Signatory';
+
+  const termsEl = document.getElementById('detail-terms-text');
+  if (termsEl && inv.terms) termsEl.textContent = inv.terms.replace(/\\n/g, ' ');
 
   // Settlement & Audit Section
   const settlementCard = document.getElementById('detail-settlement-card');
@@ -3729,7 +3864,7 @@ function handleOTPLogin() {
 }
 
 function handleSignupSubmit() {
-  const bizName = document.getElementById('signup-biz-name').value.trim() || 'New Apex Enterprise';
+  const bizName = document.getElementById('signup-biz-name').value.trim() || 'SASMITH TRADERS';
   triggerToast(`Account created for "${bizName}"! Welcome to GimBooks.`);
   setTimeout(() => {
     const challanSearch = document.getElementById('challan-search-input');
@@ -3771,7 +3906,7 @@ function handleSignupSubmit() {
 
 function quickDemoLogin(role = 'admin') {
   if (role === 'admin') {
-    triggerToast('Signing in: Apex Enterprise (Rajesh Sen - CA / Admin)...');
+    triggerToast('Signing in: SASMITH TRADERS (Rajesh Sen - CA / Admin)...');
   } else {
     triggerToast('Signing in: Reliance Retail (Client Portal)...');
   }
@@ -6052,7 +6187,7 @@ function viewDeliveryChallanDetail(id) {
     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
       <div class="p-3.5 bg-surface-container-low rounded-xl border border-outline-variant/30">
         <div class="text-[10px] uppercase font-bold text-outline tracking-wider">Consignor / Dispatched By</div>
-        <div class="font-bold text-sm text-on-surface mt-1">Apex Enterprise</div>
+        <div class="font-bold text-sm text-on-surface mt-1">SASMITH TRADERS</div>
         <div class="text-outline text-xs mt-0.5">Plot No 42, MIDC Industrial Area, Andheri East, Mumbai 400093</div>
         <div class="text-xs font-mono text-outline mt-1">GSTIN: <span class="font-bold text-on-surface">27AAAAA0000A1Z5</span></div>
       </div>
@@ -6126,7 +6261,7 @@ function viewDeliveryChallanDetail(id) {
         </div>
         <div class="mt-3 pt-2 border-t border-outline-variant/20 flex items-center gap-2">
           <span class="material-symbols-outlined text-[16px] text-emerald-600">verified</span>
-          <span class="text-on-surface font-semibold">Digitally verified and stamped for Apex Enterprise</span>
+          <span class="text-on-surface font-semibold">Digitally verified and stamped for SASMITH TRADERS</span>
         </div>
       </div>
       <div class="w-full sm:w-64 space-y-1.5 text-xs">
@@ -6357,7 +6492,7 @@ function viewEwaybillDetail(id) {
           <tbody class="divide-y divide-outline-variant/15">
             <tr>
               <td class="p-2.5 w-1/3 bg-surface-container-low font-semibold text-outline">1. GSTIN of Supplier</td>
-              <td class="p-2.5 font-mono font-bold text-on-surface">27AAAAA0000A1Z5 (Apex Enterprise)</td>
+              <td class="p-2.5 font-mono font-bold text-on-surface">33BZRPS8264H1ZN (SASMITH TRADERS)</td>
             </tr>
             <tr>
               <td class="p-2.5 bg-surface-container-low font-semibold text-outline">2. Place of Dispatch</td>
@@ -7103,7 +7238,7 @@ function openAccountModal(accountId = null) {
   if (title) title.textContent = 'Account';
   if (idInput) idInput.value = '';
   if (typeSelect) typeSelect.value = 'BANK';
-  if (holderInput) holderInput.value = window.gstStore.seller.tradeName || 'Apex Enterprise';
+  if (holderInput) holderInput.value = window.gstStore.seller.tradeName || 'SASMITH TRADERS';
   if (numberInput) numberInput.value = '';
   if (ifscInput) ifscInput.value = '';
   if (nameInput) nameInput.value = '';
