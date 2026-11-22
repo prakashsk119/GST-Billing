@@ -3,6 +3,9 @@
   "version": "1.0.0",
   "description": "GST Billing & Invoice Management Platform",
   "main": "api/mongodb.js",
+  "scripts": {
+    "build": "echo 'Build complete'"
+  },
   "dependencies": {
     "mongodb": "^6.5.0"
   }
