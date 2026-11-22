@@ -1470,7 +1470,7 @@ function renderInvoiceDetail(invId) {
           <td class="p-1.5 text-center font-medium">${item.quantity}</td>
           <td class="p-1.5 text-center font-medium">${item.unit}</td>
           <td class="p-1.5 text-right font-medium">${rateVal}</td>
-          <td class="p-1.5 text-right font-medium bg-[#e0edff]">${taxVal}</td>
+          <td class="p-1.5 text-right font-medium">${taxVal}</td>
           <td class="p-1 text-center font-medium">${cgstR}</td>
           <td class="p-1 text-right font-medium">${cgstA}</td>
           <td class="p-1 text-center font-medium">${sgstR}</td>
@@ -1493,7 +1493,7 @@ function renderInvoiceDetail(invId) {
           <td class="p-1.5"></td>
           <td class="p-1.5"></td>
           <td class="p-1.5"></td>
-          <td class="p-1.5 bg-[#e0edff]"></td>
+          <td class="p-1.5"></td>
           <td class="p-1"></td>
           <td class="p-1"></td>
           <td class="p-1"></td>

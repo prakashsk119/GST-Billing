@@ -371,11 +371,11 @@
           </div>
         </div>
 
-        <!-- Supabase Backend Cloud Sync Button -->
-        <button type="button" onclick="openBackendModal()" id="backend-header-pill" class="flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl bg-surface-container hover:bg-surface-container-high border border-outline-variant/30 text-xs font-semibold text-on-surface transition-colors shadow-xs" title="Supabase Cloud Backend: bxcsrfuxrjepjtctefoq">
-          <span id="backend-status-dot" class="w-2 h-2 rounded-full bg-amber-500"></span>
-          <span class="material-symbols-outlined text-[15px] text-emerald-600">cloud</span>
-          <span id="backend-status-text" class="hidden sm:inline text-[11px] font-bold">Cloud Sync</span>
+                <!-- MongoDB Cloud Database Backend Button -->
+        <button type="button" onclick="openBackendModal()" id="backend-header-pill" class="flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl bg-surface-container hover:bg-surface-container-high border border-outline-variant/30 text-xs font-semibold text-on-surface transition-colors shadow-xs" title="MongoDB Cloud Database">
+          <span id="backend-status-dot" class="w-2 h-2 rounded-full bg-emerald-500"></span>
+          <span id="backend-header-icon" class="text-[14px]">🍃</span>
+          <span id="backend-status-text" class="hidden sm:inline text-[11px] font-bold">MongoDB</span>
         </button>
 
         <!-- Notifications Bell -->
@@ -1552,7 +1552,7 @@
                   <th rowspan="2" class="p-1.5 text-center w-[6%] align-middle font-bold">QTY</th>
                   <th rowspan="2" class="p-1.5 text-center w-[6%] align-middle font-bold">Unit</th>
                   <th rowspan="2" class="p-1.5 text-right w-[8%] align-middle font-bold">Rate</th>
-                  <th rowspan="2" class="p-1.5 text-right w-[11%] align-middle font-bold bg-[#e0edff]">Taxable<br>Value</th>
+                  <th rowspan="2" class="p-1.5 text-right w-[11%] align-middle font-bold">Taxable<br>Value</th>
                   <th colspan="2" class="p-1 text-center w-[13%] border-b border-slate-900 font-bold">CGST</th>
                   <th colspan="2" class="p-1 text-center w-[13%] border-b border-slate-900 font-bold">SGST</th>
                   <th rowspan="2" class="p-1.5 text-right w-[11%] align-middle font-bold">Total</th>
@@ -5984,108 +5984,193 @@
     </div>
   </div>
   <!-- ==================================================== -->
-  <!-- MODAL: SUPABASE BACKEND CLOUD SYNC (#backend-modal)   -->
-  <!-- ==================================================== -->
+  <!-- MODAL: MULTI-CLOUD BACKEND SYNC (MongoDB & Supabase) (#backend-modal) -->
   <div id="backend-modal" class="hidden fixed inset-0 z-50 bg-black/60 backdrop-blur-xs flex items-center justify-center p-3 sm:p-4 overflow-y-auto">
     <div class="bg-surface-container-lowest w-full max-w-2xl rounded-2xl shadow-2xl overflow-hidden border border-outline-variant/30 flex flex-col my-auto animate-scale-up">
       
-      <!-- Modal Dark Header with Supabase Branding -->
-      <div class="bg-[#1c1c1c] text-white px-6 py-4 flex items-center justify-between border-b border-white/10">
-        <div class="flex items-center gap-3">
-          <div class="w-8 h-8 rounded-lg bg-emerald-500/20 border border-emerald-500/40 flex items-center justify-center text-emerald-400">
-            <span class="material-symbols-outlined text-[20px]">cloud_sync</span>
-          </div>
-          <div>
-            <div class="flex items-center gap-2">
-              <h3 class="font-bold text-base text-white">Connect Supabase Cloud Backend</h3>
-              <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">PostgreSQL</span>
+      <!-- Modal Dark Header with Tab Switcher -->
+      <div class="bg-[#001e2b] text-white px-6 pt-4 pb-0 flex flex-col border-b border-white/10">
+        <div class="flex items-center justify-between pb-3">
+          <div class="flex items-center gap-3">
+            <div class="w-9 h-9 rounded-xl bg-[#00ed64]/20 border border-[#00ed64]/40 flex items-center justify-center text-xl shadow-xs">
+              🍃
             </div>
-            <p class="text-xs text-slate-400">Project: <span class="text-slate-200 font-semibold">GST Billing</span> � ID: <span class="font-mono text-emerald-400">bxcsrfuxrjepjtctefoq</span></p>
+            <div>
+              <div class="flex items-center gap-2">
+                <h3 class="font-bold text-base text-white">Cloud Database & Backend Sync</h3>
+                <span class="text-[10px] font-mono px-2 py-0.5 rounded bg-[#00ed64]/20 text-[#00ed64] border border-[#00ed64]/40 font-bold">MongoDB Ready</span>
+              </div>
+              <p class="text-xs text-slate-300">Synchronize invoices, customers, and business ledgers</p>
+            </div>
           </div>
+          <button type="button" onclick="closeBackendModal()" id="backend-modal-close" class="text-slate-400 hover:text-white p-1.5 rounded-lg hover:bg-white/10 transition-colors">
+            <span class="material-symbols-outlined text-[20px]">close</span>
+          </button>
         </div>
-        <button type="button" onclick="closeBackendModal()" id="backend-modal-close" class="text-slate-400 hover:text-white p-1.5 rounded-lg hover:bg-white/10 transition-colors">
-          <span class="material-symbols-outlined text-[20px]">close</span>
-        </button>
+
+        <!-- Provider Switcher Tabs -->
+        <div class="flex items-center gap-2 border-t border-white/10 pt-1">
+          <button type="button" id="backend-tab-mongodb" onclick="switchBackendProvider('mongodb')" class="flex items-center gap-2 px-4 py-2 text-xs font-bold border-b-2 border-emerald-500 text-emerald-400 bg-white/5 cursor-pointer">
+            <span>🍃</span>
+            <span>MongoDB (Recommended)</span>
+          </button>
+          <button type="button" id="backend-tab-supabase" onclick="switchBackendProvider('supabase')" class="flex items-center gap-2 px-4 py-2 text-xs font-semibold text-slate-400 hover:text-white border-b-2 border-transparent cursor-pointer">
+            <span>⚡</span>
+            <span>Supabase (PostgreSQL)</span>
+          </button>
+        </div>
       </div>
 
       <!-- Modal Body -->
-      <div class="p-6 space-y-5 overflow-y-auto max-h-[80vh]">
+      <div class="p-6 space-y-5 overflow-y-auto max-h-[75vh]">
         
-        <!-- Live Status Banner -->
-        <div id="backend-modal-status-banner" class="p-3.5 rounded-xl bg-amber-50 border border-amber-200 text-amber-900 flex items-center justify-between text-xs">
-          <div class="flex items-center gap-2.5">
-            <span class="w-2.5 h-2.5 rounded-full bg-amber-500"></span>
-            <span class="font-bold">Offline / Local Storage</span>
-            <span class="text-[11px] text-amber-700 font-medium">(Enter API Key below to connect)</span>
-          </div>
-          <span class="text-[11px] font-semibold text-amber-800">Local Cache Ready</span>
-        </div>
-
-        <!-- 3-Step Quick Setup Guide -->
-        <div class="p-4 rounded-xl bg-surface-container-low border border-outline-variant/30 space-y-2.5">
-          <div class="flex items-center gap-2 text-xs font-bold text-on-surface">
-            <span class="material-symbols-outlined text-emerald-600 text-[18px]">help_outline</span>
-            <span>How to Connect in 2 Steps</span>
-          </div>
-          <ol class="text-xs text-on-surface-variant space-y-1.5 list-decimal list-inside pl-1 leading-relaxed">
-            <li>In your Supabase browser tab, click the green <strong class="text-emerald-700 bg-emerald-50 px-1.5 py-0.5 rounded border border-emerald-200 font-mono">Connect</strong> button at the top header (or go to <em class="not-italic font-semibold text-on-surface">Project Settings &gt; API keys</em>).</li>
-            <li>Copy the <strong class="text-on-surface font-semibold font-mono">anon public</strong> key and paste it into the field below.</li>
-            <li>Click <strong class="text-on-surface font-semibold">"Save & Connect"</strong> � you're connected!</li>
-          </ol>
-        </div>
-
-        <!-- Credentials Form -->
-        <div class="space-y-4">
-          <!-- Project URL -->
-          <div class="relative">
-            <label for="backend-url-input" class="absolute -top-2 left-3 bg-surface-container-lowest px-1 text-[11px] font-semibold text-outline">Supabase Project URL</label>
-            <input type="text" id="backend-url-input" value="https://bxcsrfuxrjepjtctefoq.supabase.co" class="w-full px-3.5 py-2.5 rounded-lg border border-outline-variant text-xs font-mono text-on-surface bg-surface-container-low outline-none focus:border-primary" />
+        <!-- PANE 1: MONGODB -->
+        <div id="backend-pane-mongodb" class="space-y-4">
+          <!-- Live Status Banner for MongoDB -->
+          <div id="mongodb-status-banner" class="p-3.5 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-950 flex items-center justify-between text-xs">
+            <div class="flex items-center gap-2.5">
+              <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-ping"></span>
+              <span class="font-bold">MongoDB Database Connected</span>
+              <span class="text-[10px] bg-emerald-200/70 text-emerald-950 px-2 py-0.5 rounded-full font-mono">gst_billing</span>
+            </div>
+            <span class="text-[11px] font-semibold text-emerald-700">Auto-Sync Active</span>
           </div>
 
-          <!-- Anon Key -->
-          <div class="relative">
-            <label for="backend-key-input" class="absolute -top-2 left-3 bg-surface-container-lowest px-1 text-[11px] font-semibold text-outline">Supabase Anon Public API Key *</label>
-            <div class="relative flex items-center">
-              <input type="password" id="backend-key-input" placeholder="Paste your anon public key here (starts with ey...)" class="w-full pl-3.5 pr-10 py-2.5 rounded-lg border border-outline-variant text-xs font-mono text-on-surface bg-surface-container-lowest outline-none focus:border-primary placeholder:text-outline" />
-              <button type="button" onclick="toggleKeyVisibility()" id="backend-key-toggle-btn" class="absolute right-2 text-outline hover:text-on-surface p-1 transition-colors" title="Toggle visibility">
-                <span id="backend-key-toggle-icon" class="material-symbols-outlined text-[18px]">visibility</span>
-              </button>
+          <!-- MongoDB Quick Connect Steps -->
+          <div class="p-4 rounded-xl bg-surface-container-low border border-outline-variant/30 space-y-2">
+            <div class="flex items-center gap-2 text-xs font-bold text-on-surface">
+              <span class="text-[16px]">🍃</span>
+              <span>Connect to MongoDB in 2 Steps</span>
+            </div>
+            <ol class="text-xs text-on-surface-variant space-y-1 list-decimal list-inside pl-1 leading-relaxed">
+              <li>Enter your <strong>MongoDB Connection URI</strong> (e.g. from MongoDB Atlas, Compass, or local <code class="font-mono text-primary font-bold">mongodb://localhost:27017</code>).</li>
+              <li>Click <strong>"Save & Connect"</strong> — your invoices and catalog will sync automatically.</li>
+            </ol>
+          </div>
+
+          <!-- MongoDB Credentials Form -->
+          <div class="space-y-3.5">
+            <!-- Connection URI -->
+            <div class="relative">
+              <label for="mongodb-uri-input" class="absolute -top-2 left-3 bg-surface-container-lowest px-1 text-[11px] font-semibold text-outline">MongoDB Connection URI *</label>
+              <div class="relative flex items-center">
+                <input type="password" id="mongodb-uri-input" value="mongodb+srv://prakashsk119_db_user:<db_password>@cluster0.smze9z7.mongodb.net/gst_billing?retryWrites=true&w=majority" placeholder="mongodb+srv://prakashsk119_db_user:<db_password>@cluster0.smze9z7.mongodb.net/gst_billing" class="w-full pl-3.5 pr-10 py-2.5 rounded-lg border border-outline-variant text-xs font-mono text-on-surface bg-surface-container-lowest outline-none focus:border-primary placeholder:text-outline" />
+                <button type="button" onclick="toggleMongoUriVisibility()" id="mongodb-uri-toggle-btn" class="absolute right-2 text-outline hover:text-on-surface p-1 transition-colors" title="Toggle visibility">
+                  <span id="mongodb-uri-toggle-icon" class="material-symbols-outlined text-[18px]">visibility</span>
+                </button>
+              </div>
+            </div>
+
+            <!-- Password Quick Fill -->
+            <div class="relative">
+              <label for="mongodb-password-quick" class="absolute -top-2 left-3 bg-surface-container-lowest px-1 text-[11px] font-semibold text-emerald-800">Password Quick-Fill (prakashsk119_db_user) *</label>
+              <div class="relative flex items-center">
+                <input type="password" id="mongodb-password-quick" oninput="applyMongoPassword(this.value)" placeholder="Enter password to replace <db_password>..." class="w-full pl-3.5 pr-10 py-2.5 rounded-lg border border-emerald-500/70 text-xs font-mono text-on-surface bg-surface-container-lowest outline-none focus:border-emerald-600 placeholder:text-outline" />
+                <button type="button" onclick="toggleQuickPasswordVisibility()" id="mongodb-pwd-toggle-btn" class="absolute right-2 text-outline hover:text-on-surface p-1 transition-colors" title="Toggle visibility">
+                  <span id="mongodb-pwd-toggle-icon" class="material-symbols-outlined text-[18px]">visibility</span>
+                </button>
+              </div>
+              <p class="text-[10px] text-slate-500 mt-1 pl-1">Typing your password automatically updates <code class="font-mono text-emerald-700 bg-emerald-50 px-1 py-0.2 rounded">&lt;db_password&gt;</code> in the connection URI above.</p>
+            </div>
+
+            <!-- Database Name -->
+            <div class="relative">
+              <label for="mongodb-db-input" class="absolute -top-2 left-3 bg-surface-container-lowest px-1 text-[11px] font-semibold text-outline">Database Name</label>
+              <input type="text" id="mongodb-db-input" value="gst_billing" class="w-full px-3.5 py-2.5 rounded-lg border border-outline-variant text-xs font-mono text-on-surface bg-surface-container-lowest outline-none focus:border-primary" />
             </div>
           </div>
+
+          <!-- Schema Script Helper -->
+          <div class="p-3.5 rounded-xl border border-dashed border-outline-variant flex items-center justify-between bg-surface-container-lowest">
+            <div class="flex items-center gap-2 text-xs">
+              <span class="material-symbols-outlined text-[20px] text-emerald-600">terminal</span>
+              <div>
+                <p class="font-bold text-on-surface">MongoDB Setup Script (mongodb_setup.js)</p>
+                <p class="text-[11px] text-outline">Creates collections with indexes for invoices, customers, and catalog</p>
+              </div>
+            </div>
+            <button type="button" onclick="copyMongoDBSchema()" id="mongodb-copy-script-btn" class="px-3 py-1.5 rounded-lg bg-surface-container hover:bg-surface-container-high border border-outline-variant text-xs font-bold text-on-surface flex items-center gap-1.5 transition-colors shadow-xs">
+              <span class="material-symbols-outlined text-[15px]">content_copy</span>
+              <span>Copy Script</span>
+            </button>
+          </div>
+
+          <!-- MongoDB Sync Action Buttons -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
+            <button type="button" onclick="syncLocalToMongoDB()" id="mongodb-sync-btn" class="py-2.5 px-4 rounded-xl bg-surface-container hover:bg-surface-container-high border border-outline-variant text-xs font-bold text-on-surface flex items-center justify-center gap-2 transition-colors">
+              <span class="material-symbols-outlined text-[16px] text-emerald-600">cloud_upload</span>
+              <span>Upload Data to MongoDB</span>
+            </button>
+            <button type="button" onclick="pullFromMongoDB()" id="mongodb-pull-btn" class="py-2.5 px-4 rounded-xl bg-surface-container hover:bg-surface-container-high border border-outline-variant text-xs font-bold text-on-surface flex items-center justify-center gap-2 transition-colors">
+              <span class="material-symbols-outlined text-[16px] text-blue-600">cloud_download</span>
+              <span>Fetch Data from MongoDB</span>
+            </button>
+          </div>
         </div>
 
-        <!-- Database Schema Helper -->
-        <div class="p-3.5 rounded-xl border border-dashed border-outline-variant flex items-center justify-between bg-surface-container-lowest">
-          <div class="flex items-center gap-2 text-xs">
-            <span class="material-symbols-outlined text-[20px] text-primary">terminal</span>
-            <div>
-              <p class="font-bold text-on-surface">PostgreSQL SQL Schema</p>
-              <p class="text-[11px] text-outline">Creates tables for Invoices, Customers, Items, Bank Accounts & Challans</p>
+        <!-- PANE 2: SUPABASE (RETAINED) -->
+        <div id="backend-pane-supabase" class="hidden space-y-4">
+          <!-- Live Status Banner -->
+          <div id="backend-modal-status-banner" class="p-3.5 rounded-xl bg-amber-50 border border-amber-200 text-amber-900 flex items-center justify-between text-xs">
+            <div class="flex items-center gap-2.5">
+              <span class="w-2.5 h-2.5 rounded-full bg-amber-500"></span>
+              <span class="font-bold">Supabase PostgreSQL Cache</span>
+              <span class="text-[11px] text-amber-700 font-medium">(Secondary Backup)</span>
+            </div>
+            <span class="text-[11px] font-semibold text-amber-800">Ready</span>
+          </div>
+
+          <!-- Credentials Form -->
+          <div class="space-y-3.5">
+            <div class="relative">
+              <label for="backend-url-input" class="absolute -top-2 left-3 bg-surface-container-lowest px-1 text-[11px] font-semibold text-outline">Supabase Project URL</label>
+              <input type="text" id="backend-url-input" value="https://bxcsrfuxrjepjtctefoq.supabase.co" class="w-full px-3.5 py-2.5 rounded-lg border border-outline-variant text-xs font-mono text-on-surface bg-surface-container-low outline-none focus:border-primary" />
+            </div>
+
+            <div class="relative">
+              <label for="backend-key-input" class="absolute -top-2 left-3 bg-surface-container-lowest px-1 text-[11px] font-semibold text-outline">Supabase Anon Public API Key *</label>
+              <div class="relative flex items-center">
+                <input type="password" id="backend-key-input" placeholder="Paste your anon public key here..." class="w-full pl-3.5 pr-10 py-2.5 rounded-lg border border-outline-variant text-xs font-mono text-on-surface bg-surface-container-lowest outline-none focus:border-primary placeholder:text-outline" />
+                <button type="button" onclick="toggleKeyVisibility()" id="backend-key-toggle-btn" class="absolute right-2 text-outline hover:text-on-surface p-1 transition-colors" title="Toggle visibility">
+                  <span id="backend-key-toggle-icon" class="material-symbols-outlined text-[18px]">visibility</span>
+                </button>
+              </div>
             </div>
           </div>
-          <button type="button" onclick="copySupabaseSchema()" id="backend-copy-sql-btn" class="px-3 py-1.5 rounded-lg bg-surface-container hover:bg-surface-container-high border border-outline-variant text-xs font-bold text-on-surface flex items-center gap-1.5 transition-colors shadow-xs">
-            <span class="material-symbols-outlined text-[15px]">content_copy</span>
-            <span>Copy SQL</span>
-          </button>
-        </div>
 
-        <!-- Action Sync Buttons -->
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
-          <button type="button" onclick="syncLocalToSupabase()" id="backend-sync-btn" class="py-2.5 px-4 rounded-xl bg-surface-container hover:bg-surface-container-high border border-outline-variant text-xs font-bold text-on-surface flex items-center justify-center gap-2 transition-colors">
-            <span class="material-symbols-outlined text-[16px] text-emerald-600">cloud_upload</span>
-            <span>Upload Local Data to Cloud</span>
-          </button>
-          <button type="button" onclick="pullAllFromSupabase()" id="backend-pull-btn" class="py-2.5 px-4 rounded-xl bg-surface-container hover:bg-surface-container-high border border-outline-variant text-xs font-bold text-on-surface flex items-center justify-center gap-2 transition-colors">
-            <span class="material-symbols-outlined text-[16px] text-blue-600">cloud_download</span>
-            <span>Fetch Data from Cloud</span>
-          </button>
+          <!-- Database Schema Helper -->
+          <div class="p-3.5 rounded-xl border border-dashed border-outline-variant flex items-center justify-between bg-surface-container-lowest">
+            <div class="flex items-center gap-2 text-xs">
+              <span class="material-symbols-outlined text-[20px] text-primary">terminal</span>
+              <div>
+                <p class="font-bold text-on-surface">PostgreSQL SQL Schema</p>
+                <p class="text-[11px] text-outline">Tables for Invoices, Customers, Items, Bank Accounts</p>
+              </div>
+            </div>
+            <button type="button" onclick="copySupabaseSchema()" id="backend-copy-sql-btn" class="px-3 py-1.5 rounded-lg bg-surface-container hover:bg-surface-container-high border border-outline-variant text-xs font-bold text-on-surface flex items-center gap-1.5 transition-colors shadow-xs">
+              <span class="material-symbols-outlined text-[15px]">content_copy</span>
+              <span>Copy SQL</span>
+            </button>
+          </div>
+
+          <!-- Action Sync Buttons -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1">
+            <button type="button" onclick="syncLocalToSupabase()" id="backend-sync-btn" class="py-2.5 px-4 rounded-xl bg-surface-container hover:bg-surface-container-high border border-outline-variant text-xs font-bold text-on-surface flex items-center justify-center gap-2 transition-colors">
+              <span class="material-symbols-outlined text-[16px] text-emerald-600">cloud_upload</span>
+              <span>Upload to Supabase</span>
+            </button>
+            <button type="button" onclick="pullAllFromSupabase()" id="backend-pull-btn" class="py-2.5 px-4 rounded-xl bg-surface-container hover:bg-surface-container-high border border-outline-variant text-xs font-bold text-on-surface flex items-center justify-center gap-2 transition-colors">
+              <span class="material-symbols-outlined text-[16px] text-blue-600">cloud_download</span>
+              <span>Fetch from Supabase</span>
+            </button>
+          </div>
         </div>
 
       </div>
 
       <!-- Modal Footer -->
       <div class="px-6 py-4 bg-surface-container-low border-t border-outline-variant/20 flex items-center justify-between">
-        <button type="button" onclick="testSupabaseConnection(true)" id="backend-test-btn" class="px-4 py-2 rounded-lg border border-outline-variant text-xs font-bold text-on-surface hover:bg-surface-container transition-colors">
+        <button type="button" onclick="testMongoDBConnection(true)" id="backend-test-btn" class="px-4 py-2 rounded-lg border border-outline-variant text-xs font-bold text-on-surface hover:bg-surface-container transition-colors">
           Test Connection
         </button>
         <div class="flex items-center gap-2.5">

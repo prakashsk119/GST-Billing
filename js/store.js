@@ -1739,8 +1739,13 @@ class GSTStore {
         })
       );
 
-      // Debounced live cloud synchronization with Supabase
-      if (typeof window !== 'undefined' && window.isCloudConnected && typeof window.syncLocalToSupabase === 'function') {
+      // Debounced live cloud synchronization with MongoDB / Supabase
+      if (typeof window !== 'undefined' && typeof window.syncLocalToCloud === 'function') {
+        if (this._syncTimeout) clearTimeout(this._syncTimeout);
+        this._syncTimeout = setTimeout(() => {
+          window.syncLocalToCloud();
+        }, 1200);
+      } else if (typeof window !== 'undefined' && window.isCloudConnected && typeof window.syncLocalToSupabase === 'function') {
         if (this._syncTimeout) clearTimeout(this._syncTimeout);
         this._syncTimeout = setTimeout(() => {
           window.syncLocalToSupabase();
