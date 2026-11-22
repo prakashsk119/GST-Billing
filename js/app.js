@@ -6898,7 +6898,7 @@ function renderBankingChart(metrics) {
   } else if (range === '365') {
     dates = ['Nov 25', 'Dec 25', 'Jan 26', 'Feb 26', 'Mar 26', 'Apr 26', 'May 26', 'Jun 26', 'Jul 26', 'Aug 26', 'Sep 26', 'Oct 26', 'Nov 26'];
   } else {
-    // 30 days default matching GimBooks UI
+    // 30 days default matching GST Billing UI
     dates = ['16 Oct', '18 Oct', '20 Oct', '22 Oct', '24 Oct', '26 Oct', '28 Oct', '30 Oct', '01 Nov', '03 Nov', '05 Nov', '07 Nov', '09 Nov', '11 Nov', '13 Nov'];
   }
 
@@ -6927,7 +6927,7 @@ function renderBankingChart(metrics) {
     }
     isCurrencyLakh = true;
   } else {
-    maxVal = 2; // Default scale in GimBooks when 0
+    maxVal = 2; // Default scale in GST Billing when 0
   }
 
   function formatYLabel(val) {

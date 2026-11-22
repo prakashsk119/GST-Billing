@@ -50,8 +50,8 @@ A high-trust, responsive, production-ready GST Billing and E-Invoicing web platf
   - Settlement & Audit Trail card with payment voucher reference
 - **Dedicated Print Styles (`@media print`):** A4-optimized, clean black-and-white print mode for paper and PDF export.
 
-### 5. Authentication & Login Portal (GimBooks GST Invoice Manager)
-- **Faithful Recreation of GimBooks Flow:**
+### 5. Authentication & Login Portal (GST Billing - GST Invoice Manager)
+- **GST Billing Flow:**
   - Gold branded emblem with invoice iconography and rust-maroon tagline.
   - **Set New Password Flow:** Dual password inputs with show/hide eye toggles.
   - **Live Dynamic Password Criteria Checklist:** Real-time green checkmark updates as user types:

@@ -136,7 +136,7 @@ html[data-theme="teal"] {
 }
 
 html[data-theme="amber"] {
-  --color-accent: #d97706; /* Warm Amber Gold (GimBooks Classic) */
+  --color-accent: #d97706; /* Warm Amber Gold (GST Billing) */
   --color-accent-hover: #b45309;
   --color-accent-light: #fffbeb;
   --color-accent-border: #fde68a;
