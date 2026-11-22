@@ -1,12 +1,33 @@
-﻿// GST Billing Platform - Application Controller & Dynamic Router
+// GST Billing Platform - Application Controller & Dynamic Router
 
 let currentView = 'dashboard';
 let activeCreateInvoiceItems = [];
 let activeCreateQuotationItems = [];
 let chartMode = 'monthly'; // 'monthly' | 'quarterly'
 
+// Dropdown Toggle for Sidebar Sales Menu
+function toggleSalesDropdown(forceState = null) {
+  const menu = document.getElementById('sales-dropdown-menu');
+  const chevron = document.getElementById('sales-dropdown-chevron');
+  if (!menu) return;
+  const isHidden = menu.classList.contains('hidden');
+  const shouldOpen = forceState !== null ? forceState : isHidden;
+  if (shouldOpen) {
+    menu.classList.remove('hidden');
+    if (chevron) chevron.style.transform = 'rotate(0deg)';
+  } else {
+    menu.classList.add('hidden');
+    if (chevron) chevron.style.transform = 'rotate(-90deg)';
+  }
+}
+window.toggleSalesDropdown = toggleSalesDropdown;
+
 // Navigation & Router
 function navigateTo(view, param = null) {
+  const salesViews = ['invoices', 'quotations', 'payment-receipts', 'refund-vouchers', 'tds-vouchers', 'proforma', 'delivery-challans', 'ewaybills', 'ledgers', 'create', 'create-quotation', 'create-proforma', 'create-delivery-challan'];
+  if (salesViews.includes(view)) {
+    toggleSalesDropdown(true);
+  }
   currentView = view;
   closeMobileMenu();
 

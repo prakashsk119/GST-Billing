@@ -174,17 +174,17 @@
             <span>Dashboard</span>
           </a>
 
-          <!-- Sales Group -->
+          <!-- Sales Group (Collapsible Accordion Dropdown) -->
           <div>
-            <div class="flex items-center justify-between px-space-md py-2 text-surface-container-lowest font-label-md rounded-lg cursor-pointer">
+            <div id="sales-dropdown-toggle" onclick="toggleSalesDropdown()" class="flex items-center justify-between px-space-md py-2 text-surface-container-lowest font-label-md rounded-lg cursor-pointer hover:bg-white/5 transition-colors select-none" title="Toggle Sales Menu">
               <div class="flex items-center gap-space-sm">
                 <span class="material-symbols-outlined text-[20px]">point_of_sale</span>
                 <span>Sales</span>
               </div>
-              <span class="material-symbols-outlined text-[18px]">expand_more</span>
+              <span id="sales-dropdown-chevron" class="material-symbols-outlined text-[18px] transition-transform duration-200">expand_more</span>
             </div>
             
-            <div class="pl-space-md pr-space-xs py-0.5 space-y-0.5">
+            <div id="sales-dropdown-menu" class="pl-space-md pr-space-xs py-0.5 space-y-0.5 transition-all duration-200 overflow-hidden">
               <a href="javascript:void(0)" onclick="navigateTo('invoices')" data-nav-view="invoices" class="flex items-center gap-space-sm px-space-sm py-1.5 transition-colors text-outline-variant hover:text-surface-container-lowest font-label-md rounded-lg">
                 <span class="material-symbols-outlined text-[18px]">receipt</span>
                 <span>Invoices</span>
