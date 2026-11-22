@@ -1,4 +1,4 @@
-﻿@layer base {
+@layer base {
   html, body {
     margin: 0;
     padding: 0;
@@ -424,4 +424,95 @@ i.material-symbols-outlined,
   direction: ltr !important;
   -webkit-font-feature-settings: 'liga' !important;
   -webkit-font-smoothing: antialiased !important;
+}
+/* ======================================================== */
+/* MOBILE RESPONSIVE ENGINE & OVERFLOW PREVENTION */
+/* ======================================================== */
+html, body {
+  width: 100%;
+  max-width: 100vw;
+  overflow-x: hidden !important;
+}
+
+#main-workspace {
+  width: 100%;
+  max-width: 100vw;
+  min-width: 0;
+  overflow-x: hidden !important;
+}
+
+main {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+}
+
+/* Touch momentum scrolling for all tables and horizontally scrollable containers */
+.overflow-x-auto {
+  -webkit-overflow-scrolling: touch !important;
+  max-width: 100% !important;
+}
+
+/* Ensure all images and SVGs respect container widths */
+img, svg {
+  max-width: 100%;
+}
+
+/* Mobile Header Optimizations (screens under 768px) */
+@media (max-width: 767px) {
+  #app-header {
+    height: 3.75rem; /* 60px */
+    padding-left: 0.75rem !important;
+    padding-right: 0.75rem !important;
+    max-width: 100vw !important;
+  }
+  
+  #header-view-title {
+    max-width: 110px;
+    font-size: 0.95rem;
+    line-height: 1.25rem;
+  }
+
+  .view-container {
+    padding-bottom: 5rem;
+  }
+}
+
+/* Responsive Table Scrollbar Styling */
+.overflow-x-auto::-webkit-scrollbar {
+  height: 4px;
+}
+.overflow-x-auto::-webkit-scrollbar-track {
+  background: transparent;
+}
+.overflow-x-auto::-webkit-scrollbar-thumb {
+  background: rgba(100, 116, 139, 0.25);
+  border-radius: 9999px;
+}
+.overflow-x-auto::-webkit-scrollbar-thumb:hover {
+  background: rgba(100, 116, 139, 0.45);
+}
+/* Strict Viewport Bounding for All Dynamic Views */
+.view-container {
+  width: 100% !important;
+  max-width: 100vw !important;
+  overflow-x: hidden !important;
+  box-sizing: border-box !important;
+}
+
+/* Touch Momentum Scrolling for Tables */
+.overflow-x-auto {
+  -webkit-overflow-scrolling: touch !important;
+  max-width: 100% !important;
+}
+/* Flex item min-width: 0 fix for flex containers on mobile */
+.view-container,
+.view-container > *,
+#main-workspace,
+#main-workspace > main,
+#main-workspace > main > * {
+  min-width: 0 !important;
+  max-width: 100% !important;
+  box-sizing: border-box !important;
 }

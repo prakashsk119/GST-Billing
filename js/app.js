@@ -3763,7 +3763,7 @@ function handleSaveNewPassword() {
     return;
   }
 
-  triggerToast('Password updated successfully for GimBooks GST Account!');
+  triggerToast('Password updated successfully for GST Billing Account!');
   setTimeout(() => {
     const challanSearch = document.getElementById('challan-search-input');
   if (challanSearch) {
@@ -3886,7 +3886,7 @@ function handleOTPLogin() {
 
 function handleSignupSubmit() {
   const bizName = document.getElementById('signup-biz-name').value.trim() || 'SASMITH TRADERS';
-  triggerToast(`Account created for "${bizName}"! Welcome to GimBooks.`);
+  triggerToast(`Account created for "${bizName}"! Welcome to GST Billing.`);
   setTimeout(() => {
     const challanSearch = document.getElementById('challan-search-input');
   if (challanSearch) {
