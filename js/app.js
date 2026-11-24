@@ -3813,7 +3813,7 @@ function triggerCustomerPdfDownload(invId = null) {
 }
 window.triggerCustomerPdfDownload = triggerCustomerPdfDownload;
 
-// Option 1: WhatsApp Web (Directly in Browser Tab + Auto-Download Bill)
+// Option 1: WhatsApp Web (Directly in Browser Tab)
 function sendWhatsAppWebDirect() {
   if (!currentWhatsAppInvoice) return;
   const phoneInput = document.getElementById('whatsapp-phone-input');
@@ -3827,17 +3827,11 @@ function sendWhatsAppWebDirect() {
   const inv = currentWhatsAppInvoice;
   const messageText = generateWhatsAppMessage(inv, includeLink);
 
-  // Directly download bill PDF to computer so user has it immediately
-  downloadWhatsAppInvoicePdf(inv);
-
-  // Copy invoice image to clipboard so user can press Ctrl+V in WhatsApp Web
-  copyInvoiceImageToClipboard(inv);
-
   const text = encodeURIComponent(messageText);
-  // Open WhatsApp Web directly in a browser tab
+  // Open WhatsApp Web directly in a browser tab without triggering local print/download popup
   window.open(`https://api.whatsapp.com/send?phone=${phone}&text=${text}`, '_blank');
   closeWhatsAppModal();
-  triggerToast('Bill PDF downloaded! In WhatsApp, press Ctrl+V or drag the PDF into the chat.');
+  triggerToast('WhatsApp Web opened in browser.');
 }
 
 // Option 2: WhatsApp App (Desktop / Mobile Protocol)
@@ -3854,12 +3848,10 @@ function sendWhatsAppAppDirect() {
   const inv = currentWhatsAppInvoice;
   const messageText = generateWhatsAppMessage(inv, includeLink);
 
-  downloadWhatsAppInvoicePdf(inv);
-
   const text = encodeURIComponent(messageText);
   window.location.href = `whatsapp://send?phone=${phone}&text=${text}`;
   closeWhatsAppModal();
-  triggerToast('Bill PDF downloaded! Opening WhatsApp application...');
+  triggerToast('Opening WhatsApp application...');
 }
 
 // Option 3: Windows / OS Device Share (with attached PDF)
