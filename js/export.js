@@ -116,15 +116,17 @@ function exportDetailedInvoicesCSV() {
 }
 
 // WhatsApp Share Formatter
-function generateWhatsAppMessage(invoice, includeLink = false) {
+function generateWhatsAppMessage(invoice, includeLink = true) {
   if (!invoice) return '';
   const seller = window.gstStore.seller;
   const paymentStatus = invoice.status === 'PAID' ? '✅ PAID' : (invoice.status === 'OVERDUE' ? '⚠️ OVERDUE' : '⏳ PENDING PAYMENT');
   
   const origin = window.location.origin || '';
   const pathname = window.location.pathname || '';
-  const directLink = `${origin}${pathname}?invoice=${invoice.id || invoice.invoiceNumber}`;
-  const linkSection = includeLink ? `\n📎 *Attached Bill:* ${invoice.invoiceNumber}.pdf\n🔗 *Online Bill Link:* ${directLink}\n` : `\n📎 *Attached Bill:* ${invoice.invoiceNumber}.pdf\n`;
+  const downloadLink = `${origin}${pathname}?invoice=${invoice.id || invoice.invoiceNumber}&download=true`;
+  const linkSection = includeLink 
+    ? `\n📥 *Click to Download Invoice Bill (PDF):*\n${downloadLink}\n` 
+    : `\n📎 *Attached Bill Document:* ${invoice.invoiceNumber}.pdf\n`;
 
   return `*TAX INVOICE - ${seller.companyName}*\n\n` +
     `Dear *${invoice.customerName}*,\n` +
