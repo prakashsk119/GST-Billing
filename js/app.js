@@ -612,7 +612,201 @@ function deleteInvoice(id) {
 // ==========================================
 // 3. CREATE INVOICE VIEW (1-CLICK TEMPLATE BILLS)
 // ==========================================
+// Manual Dispatch & Shipping Address Handlers
+window.activeCustomDispatchAddress = null;
+window.activeCustomShippingAddress = null;
+
+function resetAddressPreviews() {
+  const pDisp = document.getElementById('preview-dispatch-address');
+  const bDisp = document.getElementById('btn-add-dispatch-address');
+  if (pDisp) pDisp.classList.add('hidden');
+  if (bDisp) bDisp.classList.remove('hidden');
+
+  const pShip = document.getElementById('preview-shipping-address');
+  const bShip = document.getElementById('btn-add-shipping-address');
+  if (pShip) pShip.classList.add('hidden');
+  if (bShip) bShip.classList.remove('hidden');
+}
+
+function openDispatchAddressModal() {
+  const modal = document.getElementById('dispatch-address-modal');
+  if (!modal) return;
+  modal.classList.remove('hidden');
+
+  if (window.activeCustomDispatchAddress) {
+    const d = window.activeCustomDispatchAddress;
+    const nameEl = document.getElementById('modal-dispatch-name');
+    const addrEl = document.getElementById('modal-dispatch-address');
+    const cityEl = document.getElementById('modal-dispatch-city');
+    const pinEl = document.getElementById('modal-dispatch-pincode');
+    const stateEl = document.getElementById('modal-dispatch-state');
+    if (nameEl) nameEl.value = d.name || '';
+    if (addrEl) addrEl.value = d.address || '';
+    if (cityEl) cityEl.value = d.city || '';
+    if (pinEl) pinEl.value = d.pincode || '';
+    if (stateEl && d.state) stateEl.value = d.state;
+  } else {
+    const nameEl = document.getElementById('modal-dispatch-name');
+    if (nameEl && !nameEl.value) copySupplierToDispatchModal();
+  }
+}
+
+function closeDispatchAddressModal() {
+  const modal = document.getElementById('dispatch-address-modal');
+  if (modal) modal.classList.add('hidden');
+}
+
+function copySupplierToDispatchModal() {
+  const nameEl = document.getElementById('modal-dispatch-name');
+  const addrEl = document.getElementById('modal-dispatch-address');
+  const cityEl = document.getElementById('modal-dispatch-city');
+  const pinEl = document.getElementById('modal-dispatch-pincode');
+  const stateEl = document.getElementById('modal-dispatch-state');
+
+  if (nameEl) nameEl.value = 'SASMITH TRADERS (Central Warehouse)';
+  if (addrEl) addrEl.value = 'Plot No. 42, Tech Horizon Park, Baner Road';
+  if (cityEl) cityEl.value = 'Pune';
+  if (pinEl) pinEl.value = '411057';
+  if (stateEl) stateEl.value = '27 - Maharashtra';
+}
+
+function saveDispatchAddressFromModal() {
+  const name = document.getElementById('modal-dispatch-name')?.value.trim() || 'Central Warehouse';
+  const address = document.getElementById('modal-dispatch-address')?.value.trim();
+  const city = document.getElementById('modal-dispatch-city')?.value.trim();
+  const pincode = document.getElementById('modal-dispatch-pincode')?.value.trim();
+  const state = document.getElementById('modal-dispatch-state')?.value || '27 - Maharashtra';
+
+  if (!address || !city) {
+    triggerToast('Please enter dispatch street address and city');
+    return;
+  }
+
+  const fullText = `${name}, ${address}, ${city}, ${state} - ${pincode || '411057'}`;
+  window.activeCustomDispatchAddress = { name, address, city, pincode, state, fullText };
+
+  const textEl = document.getElementById('text-dispatch-address');
+  const preview = document.getElementById('preview-dispatch-address');
+  const btn = document.getElementById('btn-add-dispatch-address');
+
+  if (textEl) textEl.textContent = fullText;
+  if (preview) preview.classList.remove('hidden');
+  if (btn) btn.classList.add('hidden');
+
+  closeDispatchAddressModal();
+  triggerToast('Dispatch (Consignor) address applied');
+}
+
+function removeDispatchAddress() {
+  window.activeCustomDispatchAddress = null;
+  const preview = document.getElementById('preview-dispatch-address');
+  const btn = document.getElementById('btn-add-dispatch-address');
+  if (preview) preview.classList.add('hidden');
+  if (btn) btn.classList.remove('hidden');
+  triggerToast('Dispatch address removed');
+}
+
+function openShippingAddressModal() {
+  const modal = document.getElementById('shipping-address-modal');
+  if (!modal) return;
+  modal.classList.remove('hidden');
+
+  if (window.activeCustomShippingAddress) {
+    const s = window.activeCustomShippingAddress;
+    const nameEl = document.getElementById('modal-shipping-name');
+    const gstinEl = document.getElementById('modal-shipping-gstin');
+    const addrEl = document.getElementById('modal-shipping-address');
+    const cityEl = document.getElementById('modal-shipping-city');
+    const pinEl = document.getElementById('modal-shipping-pincode');
+    const stateEl = document.getElementById('modal-shipping-state');
+    if (nameEl) nameEl.value = s.name || '';
+    if (gstinEl) gstinEl.value = s.gstin || '';
+    if (addrEl) addrEl.value = s.address || '';
+    if (cityEl) cityEl.value = s.city || '';
+    if (pinEl) pinEl.value = s.pincode || '';
+    if (stateEl && s.state) stateEl.value = s.state;
+  } else {
+    const nameEl = document.getElementById('modal-shipping-name');
+    if (nameEl && !nameEl.value) copyBuyerBillingToShippingModal();
+  }
+}
+
+function closeShippingAddressModal() {
+  const modal = document.getElementById('shipping-address-modal');
+  if (modal) modal.classList.add('hidden');
+}
+
+function copyBuyerBillingToShippingModal() {
+  const custSelect = document.getElementById('create-inv-customer');
+  const custId = custSelect ? custSelect.value : null;
+  const cust = (window.gstStore.customers || []).find(c => c.id === custId) || window.gstStore.customers[0];
+
+  if (cust) {
+    const nameEl = document.getElementById('modal-shipping-name');
+    const gstinEl = document.getElementById('modal-shipping-gstin');
+    const addrEl = document.getElementById('modal-shipping-address');
+    const cityEl = document.getElementById('modal-shipping-city');
+    const pinEl = document.getElementById('modal-shipping-pincode');
+    const stateEl = document.getElementById('modal-shipping-state');
+
+    if (nameEl) nameEl.value = cust.name;
+    if (gstinEl) gstinEl.value = cust.gstin || '';
+    if (addrEl) addrEl.value = cust.address || '';
+    if (cityEl) cityEl.value = cust.city || (cust.address ? cust.address.split(',')[1]?.trim() : 'Pune');
+    if (pinEl) pinEl.value = cust.pincode || '411014';
+    if (stateEl && cust.state) {
+      for (let i = 0; i < stateEl.options.length; i++) {
+        if (stateEl.options[i].value.includes(cust.state) || stateEl.options[i].value.startsWith(cust.stateCode)) {
+          stateEl.selectedIndex = i;
+          break;
+        }
+      }
+    }
+  }
+}
+
+function saveShippingAddressFromModal() {
+  const name = document.getElementById('modal-shipping-name')?.value.trim() || 'Consignee Recipient';
+  const gstin = document.getElementById('modal-shipping-gstin')?.value.trim().toUpperCase();
+  const address = document.getElementById('modal-shipping-address')?.value.trim();
+  const city = document.getElementById('modal-shipping-city')?.value.trim();
+  const pincode = document.getElementById('modal-shipping-pincode')?.value.trim();
+  const state = document.getElementById('modal-shipping-state')?.value || '27 - Maharashtra';
+
+  if (!address || !city) {
+    triggerToast('Please enter delivery street address and city');
+    return;
+  }
+
+  const fullText = `${name}${gstin ? ` (GSTIN: ${gstin})` : ''}, ${address}, ${city}, ${state} - ${pincode || '411014'}`;
+  window.activeCustomShippingAddress = { name, gstin, address, city, pincode, state, fullText };
+
+  const textEl = document.getElementById('text-shipping-address');
+  const preview = document.getElementById('preview-shipping-address');
+  const btn = document.getElementById('btn-add-shipping-address');
+
+  if (textEl) textEl.textContent = fullText;
+  if (preview) preview.classList.remove('hidden');
+  if (btn) btn.classList.add('hidden');
+
+  closeShippingAddressModal();
+  triggerToast('Shipping (Consignee) address applied');
+}
+
+function removeShippingAddress() {
+  window.activeCustomShippingAddress = null;
+  const preview = document.getElementById('preview-shipping-address');
+  const btn = document.getElementById('btn-add-shipping-address');
+  if (preview) preview.classList.add('hidden');
+  if (btn) btn.classList.remove('hidden');
+  triggerToast('Shipping address removed');
+}
+
 function initCreateInvoiceForm() {
+  window.activeCustomDispatchAddress = null;
+  window.activeCustomShippingAddress = null;
+  resetAddressPreviews();
+
   const nextNum = window.gstStore.getNextInvoiceNumber();
   const numInput = document.getElementById('create-inv-number');
   if (numInput) numInput.value = nextNum;
@@ -1292,7 +1486,12 @@ function submitCreateInvoice(isDraft = false) {
     customerName: cust.name,
     customerGstin: cust.gstin,
     customerAddress: cust.address,
-    dispatchAddress: cust.dispatchAddress,
+    dispatchAddress: window.activeCustomDispatchAddress ? window.activeCustomDispatchAddress.fullText : (cust.dispatchAddress || window.gstStore.seller.address),
+    shippingAddress: window.activeCustomShippingAddress ? window.activeCustomShippingAddress.fullText : cust.address,
+    consigneeName: window.activeCustomShippingAddress ? window.activeCustomShippingAddress.name : cust.name,
+    consigneeGstin: window.activeCustomShippingAddress ? (window.activeCustomShippingAddress.gstin || cust.gstin) : cust.gstin,
+    consigneeAddress: window.activeCustomShippingAddress ? window.activeCustomShippingAddress.fullText : cust.address,
+    consigneeState: window.activeCustomShippingAddress ? window.activeCustomShippingAddress.state : cust.state,
     placeOfSupply: `${cust.stateCode} - ${cust.state}`,
     stateCode: cust.stateCode,
     reverseCharge: 'No',
@@ -1315,6 +1514,9 @@ function submitCreateInvoice(isDraft = false) {
 
   window.gstStore.addInvoice(newInvoice);
   activeCreateInvoiceItems = [];
+  window.activeCustomDispatchAddress = null;
+  window.activeCustomShippingAddress = null;
+  resetAddressPreviews();
 
   triggerToast(isDraft ? `Draft ${invNumber} saved` : `Invoice ${invNumber} generated in structured GST format!`);
   renderInvoicesList();
@@ -1457,13 +1659,13 @@ function renderInvoiceDetail(invId) {
   if (conNameEl) conNameEl.textContent = inv.consigneeName || inv.customerName;
 
   const conAddrEl = document.getElementById('detail-consignee-address');
-  if (conAddrEl) conAddrEl.textContent = inv.dispatchAddress || inv.customerAddress;
+  if (conAddrEl) conAddrEl.textContent = inv.shippingAddress || inv.consigneeAddress || inv.customerAddress;
 
   const conStateEl = document.getElementById('detail-consignee-state');
   if (conStateEl) conStateEl.textContent = inv.consigneeState || (inv.placeOfSupply ? inv.placeOfSupply.replace(/^\d+\s*-\s*/, '') : 'Tamil Nadu');
 
   const dispatchAddrEl = document.getElementById('detail-dispatch-address');
-  if (dispatchAddrEl) dispatchAddrEl.textContent = inv.dispatchAddress || inv.customerAddress;
+  if (dispatchAddrEl) dispatchAddrEl.textContent = inv.dispatchAddress || inv.sellerAddress || 'Plot No. 42, Tech Horizon Park, Baner Road, Pune, Maharashtra - 411057';
 
   const dueDateEl = document.getElementById('detail-due-date');
   if (dueDateEl) dueDateEl.textContent = inv.dueDate;
