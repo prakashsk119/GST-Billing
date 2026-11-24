@@ -3721,6 +3721,8 @@ function openWhatsAppModal(invId) {
 
   const customer = window.gstStore.customers.find(c => c.id === inv.customerId);
   if (phoneInput) phoneInput.value = customer ? customer.phone.replace(/[^0-9]/g, '') : '919820011223';
+  const emailInput = document.getElementById('share-email-input');
+  if (emailInput) emailInput.value = customer && customer.email ? customer.email : 'accounts@relianceretail.com';
   
   // Default to NO link so pure bill document is sent without URL
   if (checkbox) checkbox.checked = false;
@@ -3834,7 +3836,29 @@ function sendWhatsAppWebDirect() {
   triggerToast('WhatsApp Web opened in browser.');
 }
 
-// Option 2: WhatsApp App (Desktop / Mobile Protocol)
+// Option 2: Send via Gmail (Opens Gmail Web Composer in Browser)
+function sendGmailDirect() {
+  if (!currentWhatsAppInvoice) return;
+  const inv = currentWhatsAppInvoice;
+  const emailInput = document.getElementById('share-email-input');
+  const customer = window.gstStore.customers.find(c => c.id === inv.customerId);
+  const toEmail = emailInput && emailInput.value.trim() ? emailInput.value.trim() : (customer && customer.email ? customer.email : 'accounts@relianceretail.com');
+  const seller = window.gstStore.seller;
+  const subject = `Tax Invoice ${inv.invoiceNumber} - ${seller.companyName}`;
+  const body = window.generateInvoiceEmailBody ? window.generateInvoiceEmailBody(inv) : generateWhatsAppMessage(inv, false);
+
+  // Directly download bill to computer so user can attach it with 1 click in Gmail
+  downloadWhatsAppInvoicePdf(inv);
+
+  // Open Gmail web compose URL in browser tab
+  const gmailUrl = `https://mail.google.com/mail/?view=cm&fs=1&to=${encodeURIComponent(toEmail)}&su=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+  window.open(gmailUrl, '_blank');
+  closeWhatsAppModal();
+  triggerToast('Invoice PDF downloaded! Gmail composer opened in browser.');
+}
+window.sendGmailDirect = sendGmailDirect;
+
+// Option 3: WhatsApp App (Desktop / Mobile Protocol)
 function sendWhatsAppAppDirect() {
   if (!currentWhatsAppInvoice) return;
   const phoneInput = document.getElementById('whatsapp-phone-input');

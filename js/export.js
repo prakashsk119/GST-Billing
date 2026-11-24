@@ -145,6 +145,38 @@ function generateWhatsAppMessage(invoice, includeLink = false) {
     `For any queries, contact: ${seller.phone}`;
 }
 
+// Gmail & Email Formatter
+function generateInvoiceEmailBody(invoice) {
+  if (!invoice) return '';
+  const seller = window.gstStore.seller;
+  const paymentStatus = invoice.status === 'PAID' ? 'PAID' : (invoice.status === 'OVERDUE' ? 'OVERDUE' : 'PENDING PAYMENT');
+  const invNumber = invoice.invoiceNumber || invoice.id;
+
+  return `Dear ${invoice.customerName},\n\n` +
+    `Greetings from ${seller.companyName}!\n\n` +
+    `Please find below your Tax Invoice summary for Invoice No: ${invNumber}.\n\n` +
+    `--------------------------------------------------\n` +
+    `INVOICE SUMMARY:\n` +
+    `• Invoice Number: ${invNumber}\n` +
+    `• Date of Issue: ${invoice.issueDate}\n` +
+    `• Total Amount: ${window.formatINR(invoice.grandTotal)}\n` +
+    `• Payment Status: ${paymentStatus}\n` +
+    (invoice.irn ? `• IRN: ${invoice.irn}\n` : '') +
+    `\nBANK DETAILS FOR PAYMENT:\n` +
+    `• Beneficiary Name: ${seller.companyName}\n` +
+    `• Bank: ${seller.bankName}\n` +
+    `• Account Number: ${seller.accountNumber}\n` +
+    `• IFSC Code: ${seller.ifsc}\n` +
+    `• Branch: ${seller.branch || 'Main Branch'}\n\n` +
+    `Attached Document: ${invNumber}.pdf\n\n` +
+    `Thank you for your business!\n\n` +
+    `Best regards,\n` +
+    `${seller.companyName}\n` +
+    `Phone: ${seller.phone}\n` +
+    `Email: ${seller.email || 'sathishnivi8866@gmail.com'}`;
+}
+
 window.exportGSTR1CSV = exportGSTR1CSV;
 window.exportDetailedInvoicesCSV = exportDetailedInvoicesCSV;
 window.generateWhatsAppMessage = generateWhatsAppMessage;
+window.generateInvoiceEmailBody = generateInvoiceEmailBody;
