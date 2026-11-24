@@ -3771,51 +3771,24 @@ function downloadWhatsAppInvoicePdf() {
   }
 }
 
-async function sendWhatsAppNow() {
+function sendWhatsAppNow() {
   if (!currentWhatsAppInvoice) return;
-  const phone = document.getElementById('whatsapp-phone-input').value.trim();
+  const phoneInput = document.getElementById('whatsapp-phone-input');
+  let phone = phoneInput ? phoneInput.value.trim().replace(/[^0-9]/g, '') : '';
+  if (phone.length === 10) {
+    phone = '91' + phone;
+  }
+
   const checkbox = document.getElementById('whatsapp-include-link-checkbox');
   const includeLink = checkbox ? checkbox.checked : true;
   const inv = currentWhatsAppInvoice;
   const messageText = generateWhatsAppMessage(inv, includeLink);
 
-  // Attempt Web Share API with PDF file if device supports it
-  if (navigator.canShare && window.html2pdf) {
-    try {
-      renderInvoiceDetail(inv.id);
-      const element = document.getElementById('invoice-detail-card');
-      const opt = {
-        margin: [6, 6, 6, 6],
-        filename: `${inv.invoiceNumber}.pdf`,
-        image: { type: 'jpeg', quality: 0.98 },
-        html2canvas: { scale: 2, useCORS: true },
-        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
-      };
-      const pdfBlob = await window.html2pdf().set(opt).from(element).outputPdf('blob');
-      const pdfFile = new File([pdfBlob], `${inv.invoiceNumber}.pdf`, { type: 'application/pdf' });
-
-      if (navigator.canShare({ files: [pdfFile] })) {
-        await navigator.share({
-          files: [pdfFile],
-          title: `Tax Invoice ${inv.invoiceNumber}`,
-          text: messageText
-        });
-        closeWhatsAppModal();
-        triggerToast('Shared invoice with attached PDF!');
-        return;
-      }
-    } catch (e) {
-      console.log('Native share declined/failed, continuing to WhatsApp Web', e);
-    }
-  }
-
-  // Trigger PDF download so user has it ready to drag/attach into chat
-  downloadWhatsAppInvoicePdf();
-
   const text = encodeURIComponent(messageText);
+  // Direct WhatsApp Web in browser - opens tab seamlessly
   window.open(`https://api.whatsapp.com/send?phone=${phone}&text=${text}`, '_blank');
   closeWhatsAppModal();
-  triggerToast('WhatsApp opened! Drag the downloaded invoice PDF to attach.');
+  triggerToast('WhatsApp Web opened in browser!');
 }
 
 function copyWhatsAppText() {

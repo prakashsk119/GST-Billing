@@ -5198,10 +5198,16 @@
           <label class="text-label-sm font-semibold text-on-surface-variant block mb-1">Message Preview:</label>
           <pre id="whatsapp-message-preview" class="p-3 bg-surface-container-low rounded-lg text-body-sm font-mono text-on-surface-variant whitespace-pre-wrap max-h-44 overflow-y-auto border border-outline-variant/20 text-[12px] leading-relaxed"></pre>
         </div>
+
+        <!-- Tip to attach PDF in WhatsApp Web -->
+        <p class="text-[11px] text-on-surface-variant flex items-center gap-1 bg-surface-container-low p-2 rounded-lg border border-outline-variant/20">
+          <span class="material-symbols-outlined text-[15px] text-emerald-600 shrink-0">info</span>
+          <span>Click <b>Download PDF</b> to get the file, then attach or drag it into WhatsApp Web.</span>
+        </p>
       </div>
 
       <div class="p-space-md bg-surface-container-low flex items-center justify-between gap-2 border-t border-outline-variant/20 flex-wrap">
-        <button type="button" onclick="downloadWhatsAppInvoicePdf()" class="px-3 py-2 rounded-lg bg-surface-container-lowest hover:bg-surface-container text-on-surface font-label-md transition-colors flex items-center gap-1 border border-outline-variant/30 text-xs font-semibold cursor-pointer">
+        <button type="button" onclick="downloadWhatsAppInvoicePdf()" class="px-3 py-2 rounded-lg bg-surface-container-lowest hover:bg-surface-container text-on-surface font-label-md transition-colors flex items-center gap-1 border border-outline-variant/30 text-xs font-semibold cursor-pointer" title="Download invoice PDF to attach">
           <span class="material-symbols-outlined text-[16px] text-emerald-600">picture_as_pdf</span>
           <span>Download PDF</span>
         </button>
@@ -5211,9 +5217,9 @@
             <span class="material-symbols-outlined text-[16px]">content_copy</span>
             <span>Copy Text</span>
           </button>
-          <button type="button" onclick="sendWhatsAppNow()" class="px-4 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-label-md font-bold transition-all shadow-sm flex items-center gap-1.5 cursor-pointer active:scale-95 text-xs">
-            <span class="material-symbols-outlined text-[18px]">send</span>
-            <span>Send & Attach</span>
+          <button type="button" onclick="sendWhatsAppNow()" class="px-4 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-label-md font-bold transition-all shadow-sm flex items-center gap-1.5 cursor-pointer active:scale-95 text-xs" title="Open WhatsApp Web in browser">
+            <span class="material-symbols-outlined text-[18px]">open_in_new</span>
+            <span>Send via WhatsApp Web</span>
           </button>
         </div>
       </div>
