@@ -4532,17 +4532,13 @@
       <!-- ============================================== -->
       <section id="view-login" class="view-container hidden flex flex-col justify-center items-center py-4 min-h-[calc(100vh-5rem)]">
         
-        <!-- Top Quick Nav Pill -->
-        <div class="auth-nav-container w-full max-w-[440px] mx-auto flex items-center justify-between pb-3 px-1 no-print">
-          <button onclick="navigateTo('dashboard')" class="flex items-center gap-1.5 text-xs text-on-surface-variant hover:text-on-surface font-semibold bg-surface-container-low hover:bg-surface-container px-3 py-1.5 rounded-lg border border-outline-variant/30 transition-all active:scale-95 shadow-2xs">
-            <span class="material-symbols-outlined text-[16px]">arrow_back</span>
-            <span>Dashboard</span>
-          </button>
-          <div class="flex items-center gap-0.5 bg-surface-container-low p-1 rounded-lg border border-outline-variant/30 text-[11px] font-semibold">
-            <button onclick="switchLoginMode('LOGIN_PASSWORD')" class="login-tab-pill px-2 py-1 rounded transition-colors text-on-surface" data-mode="LOGIN_PASSWORD">Password</button>
-            <button onclick="switchLoginMode('LOGIN_OTP')" class="login-tab-pill px-2 py-1 rounded transition-colors text-on-surface-variant" data-mode="LOGIN_OTP">OTP</button>
-            <button onclick="switchLoginMode('SET_PASSWORD')" class="login-tab-pill px-2 py-1 rounded transition-colors text-on-surface-variant" data-mode="SET_PASSWORD">Reset</button>
-            <button onclick="switchLoginMode('SIGNUP')" class="login-tab-pill px-2 py-1 rounded transition-colors text-on-surface-variant" data-mode="SIGNUP">Sign Up</button>
+        <!-- Top Mode Switcher (Clean, Centered, No Backdoor Dashboard Button) -->
+        <div class="auth-nav-container w-full max-w-[440px] mx-auto flex items-center justify-center pb-3 px-1 no-print">
+          <div class="inline-flex items-center gap-1 bg-surface-container-low p-1 rounded-xl border border-outline-variant/30 text-xs font-semibold shadow-xs">
+            <button type="button" onclick="switchLoginMode('LOGIN_PASSWORD')" class="login-tab-pill px-3.5 py-1.5 rounded-lg transition-all text-on-surface font-bold" data-mode="LOGIN_PASSWORD">Sign In</button>
+            <button type="button" onclick="switchLoginMode('SIGNUP')" class="login-tab-pill px-3.5 py-1.5 rounded-lg transition-all text-on-surface-variant font-medium" data-mode="SIGNUP">Create Account</button>
+            <button type="button" onclick="switchLoginMode('LOGIN_OTP')" class="login-tab-pill px-2.5 py-1.5 rounded-lg transition-all text-on-surface-variant font-medium" data-mode="LOGIN_OTP">OTP</button>
+            <button type="button" onclick="switchLoginMode('SET_PASSWORD')" class="login-tab-pill px-2.5 py-1.5 rounded-lg transition-all text-on-surface-variant font-medium" data-mode="SET_PASSWORD">Reset</button>
           </div>
         </div>
 
@@ -4683,14 +4679,13 @@
                 </div>
 
                 <div class="space-y-2">
-                  <button type="button" onclick="switchLoginMode('LOGIN_OTP')" class="w-full py-3 px-4 rounded-xl bg-[#2e313d] hover:bg-[#232631] text-white font-medium text-[13px] transition-all active:scale-[0.98] cursor-pointer shadow-xs">
-                    Login with OTP
+                  <button type="button" onclick="switchLoginMode('SIGNUP')" class="w-full py-3 px-4 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-[13px] transition-all active:scale-[0.98] cursor-pointer shadow-xs flex items-center justify-center gap-2">
+                    <span class="material-symbols-outlined text-[18px] text-amber-400">person_add</span>
+                    <span>Create New Account</span>
                   </button>
-                  <button type="button" onclick="switchLoginMode('SET_PASSWORD')" class="w-full py-3 px-4 rounded-xl bg-[#2e313d] hover:bg-[#232631] text-white font-medium text-[13px] transition-all active:scale-[0.98] cursor-pointer shadow-xs">
-                    Set New Password
-                  </button>
-                  <button type="button" onclick="switchLoginMode('SIGNUP')" class="w-full py-3 px-4 rounded-xl bg-[#2e313d] hover:bg-[#232631] text-white font-medium text-[13px] transition-all active:scale-[0.98] cursor-pointer shadow-xs">
-                    Signup with password
+                  <button type="button" onclick="switchLoginMode('LOGIN_OTP')" class="w-full py-2.5 px-4 rounded-xl bg-surface-container-low hover:bg-surface-container text-on-surface font-semibold text-[13px] border border-outline-variant/30 transition-all active:scale-[0.98] cursor-pointer shadow-2xs flex items-center justify-center gap-2">
+                    <span class="material-symbols-outlined text-[18px] text-primary">sms</span>
+                    <span>Login with OTP</span>
                   </button>
                 </div>
               </form>
@@ -4753,45 +4748,102 @@
             </div>
 
             <!-- ============================================== -->
-            <!-- FLOW 4: SIGNUP WITH PASSWORD -->
+            <!-- FLOW 4: SIGNUP WITH PASSWORD (PROPER CREATE ACCOUNT) -->
             <!-- ============================================== -->
             <div id="login-flow-signup" class="auth-flow-block hidden">
-              <h2 class="text-center font-bold text-[24px] text-slate-900 mb-1 tracking-tight">Create Business Account</h2>
-              <p class="text-center text-slate-500 text-[12px] mb-5">Start generating compliant GST e-Invoices in 60s</p>
+              <h2 class="text-center font-bold text-[22px] text-slate-900 mb-1 tracking-tight">Create New Account</h2>
+              <p class="text-center text-slate-500 text-[12px] mb-4">Set up your personalized GST Billing workspace</p>
 
               <form onsubmit="event.preventDefault(); handleSignupSubmit();" class="space-y-3">
+                <!-- Full Name -->
                 <div>
-                  <label class="font-semibold text-slate-800 text-[13px] mb-1 block">Company / Business Name</label>
-                  <input id="signup-biz-name" type="text" placeholder="e.g. Skyline Logistics Pvt Ltd" class="w-full py-2.5 px-3.5 rounded-xl border border-slate-300 text-slate-900 outline-none text-[14px] focus:border-amber-500 focus:ring-2 focus:ring-amber-200 transition-all" />
+                  <label class="font-semibold text-slate-800 text-[13px] mb-1 block">Full Name *</label>
+                  <div class="relative rounded-xl border border-slate-300 bg-white focus-within:border-amber-500 focus-within:ring-2 focus-within:ring-amber-200 transition-all">
+                    <input id="signup-name" type="text" value="Prakash SK" placeholder="e.g. Prakash S K" required class="w-full py-2.5 px-3.5 bg-transparent text-slate-900 outline-none text-[14px]" />
+                  </div>
                 </div>
 
+                <!-- Email Address -->
                 <div>
-                  <label class="font-semibold text-slate-800 text-[13px] mb-1 block">GSTIN (Optional for unregistered)</label>
-                  <input id="signup-biz-gstin" type="text" maxlength="15" placeholder="e.g. 33BZRPS8264H1ZN" class="w-full py-2.5 px-3.5 rounded-xl border border-slate-300 text-slate-900 outline-none text-[14px] font-mono uppercase focus:border-amber-500 focus:ring-2 focus:ring-amber-200 transition-all" />
+                  <label class="font-semibold text-slate-800 text-[13px] mb-1 block">Email Address *</label>
+                  <div class="relative rounded-xl border border-slate-300 bg-white focus-within:border-amber-500 focus-within:ring-2 focus-within:ring-amber-200 transition-all">
+                    <input id="signup-email" type="email" value="prakashsk119@gmail.com" placeholder="name@company.com" required class="w-full py-2.5 px-3.5 bg-transparent text-slate-900 outline-none text-[14px]" />
+                  </div>
                 </div>
 
+                <!-- Mobile Number -->
                 <div>
-                  <label class="font-semibold text-slate-800 text-[13px] mb-1 block">Create Password</label>
-                  <input id="signup-pwd" type="password" placeholder="Create a strong password" class="w-full py-2.5 px-3.5 rounded-xl border border-slate-300 text-slate-900 outline-none text-[14px] focus:border-amber-500 focus:ring-2 focus:ring-amber-200 transition-all" />
+                  <label class="font-semibold text-slate-800 text-[13px] mb-1 block">Mobile Number *</label>
+                  <div class="flex rounded-xl border border-slate-300 bg-white overflow-hidden focus-within:border-amber-500 focus-within:ring-2 focus-within:ring-amber-200 transition-all">
+                    <span class="bg-slate-100 px-3 py-2.5 border-r border-slate-300 font-bold text-[13px] text-slate-700 flex items-center">+91</span>
+                    <input id="signup-mobile" type="tel" maxlength="10" value="9876543210" placeholder="10-digit mobile" class="w-full py-2.5 px-3.5 bg-transparent text-slate-900 outline-none text-[14px] font-mono" />
+                  </div>
                 </div>
 
-                <button type="submit" class="w-full py-3.5 px-4 rounded-xl bg-[#fdd428] hover:bg-[#fac710] text-slate-950 font-bold text-[16px] shadow-sm transition-transform active:scale-[0.98] cursor-pointer mt-2">
-                  Register & Open Dashboard
+                <!-- Company / Business Name -->
+                <div>
+                  <label class="font-semibold text-slate-800 text-[13px] mb-1 block">Business / Company Name *</label>
+                  <div class="relative rounded-xl border border-slate-300 bg-white focus-within:border-amber-500 focus-within:ring-2 focus-within:ring-amber-200 transition-all">
+                    <input id="signup-biz-name" type="text" value="SASMITH TRADERS" placeholder="e.g. SASMITH TRADERS" required class="w-full py-2.5 px-3.5 bg-transparent text-slate-900 outline-none text-[14px]" />
+                  </div>
+                </div>
+
+                <!-- GSTIN -->
+                <div>
+                  <label class="font-semibold text-slate-800 text-[13px] mb-1 block">GSTIN <span class="text-slate-400 font-normal text-[11px]">(Optional for unregistered)</span></label>
+                  <div class="relative rounded-xl border border-slate-300 bg-white focus-within:border-amber-500 focus-within:ring-2 focus-within:ring-amber-200 transition-all">
+                    <input id="signup-biz-gstin" type="text" maxlength="15" value="33BZRPS8264H1ZN" placeholder="e.g. 33BZRPS8264H1ZN" class="w-full py-2.5 px-3.5 bg-transparent text-slate-900 outline-none text-[14px] font-mono uppercase" />
+                  </div>
+                </div>
+
+                <!-- Create Password -->
+                <div>
+                  <label class="font-semibold text-slate-800 text-[13px] mb-1 block">Create Password *</label>
+                  <div class="relative rounded-xl border border-slate-300 bg-white focus-within:border-amber-500 focus-within:ring-2 focus-within:ring-amber-200 transition-all">
+                    <input id="signup-pwd" type="password" value="pass1234" placeholder="Enter password" class="w-full py-2.5 px-3.5 pr-10 bg-transparent text-slate-900 outline-none text-[14px]" />
+                    <button type="button" onclick="togglePasswordVisibility('signup-pwd', 'signup-pwd-eye')" class="absolute right-3 top-2.5 text-slate-400 hover:text-slate-700 cursor-pointer">
+                      <span id="signup-pwd-eye" class="material-symbols-outlined text-[20px]">visibility_off</span>
+                    </button>
+                  </div>
+                </div>
+
+                <!-- Confirm Password -->
+                <div>
+                  <label class="font-semibold text-slate-800 text-[13px] mb-1 block">Confirm Password *</label>
+                  <div class="relative rounded-xl border border-slate-300 bg-white focus-within:border-amber-500 focus-within:ring-2 focus-within:ring-amber-200 transition-all">
+                    <input id="signup-pwd-confirm" type="password" value="pass1234" placeholder="Re-enter password" class="w-full py-2.5 px-3.5 pr-10 bg-transparent text-slate-900 outline-none text-[14px]" />
+                    <button type="button" onclick="togglePasswordVisibility('signup-pwd-confirm', 'signup-pwd-confirm-eye')" class="absolute right-3 top-2.5 text-slate-400 hover:text-slate-700 cursor-pointer">
+                      <span id="signup-pwd-confirm-eye" class="material-symbols-outlined text-[20px]">visibility_off</span>
+                    </button>
+                  </div>
+                </div>
+
+                <!-- Terms Checkbox -->
+                <div class="pt-1">
+                  <label class="flex items-center gap-2 text-[12px] text-slate-600 cursor-pointer">
+                    <input type="checkbox" checked class="rounded text-amber-500 accent-amber-500" />
+                    <span>I agree to GST terms & e-Invoicing guidelines</span>
+                  </label>
+                </div>
+
+                <!-- Submit Button -->
+                <button type="submit" class="w-full py-3.5 px-4 rounded-xl bg-[#fdd428] hover:bg-[#fac710] text-slate-950 font-bold text-[15px] shadow-sm transition-transform active:scale-[0.98] cursor-pointer mt-2">
+                  Create Account & Open Workspace
                 </button>
 
-                <div class="relative flex py-2.5 items-center justify-center my-1">
+                <!-- Divider & Sign In Link -->
+                <div class="relative flex py-2 items-center justify-center my-1">
                   <div class="border-t border-slate-200 w-full absolute"></div>
-                  <span class="bg-white px-3 text-slate-400 text-[12px] uppercase tracking-wider relative font-medium">or</span>
+                  <span class="bg-white px-3 text-slate-400 text-[11px] uppercase tracking-wider relative font-medium">or</span>
                 </div>
 
-                <div class="space-y-2">
-                  <button type="button" onclick="switchLoginMode('LOGIN_PASSWORD')" class="w-full py-3 px-4 rounded-xl bg-[#2e313d] hover:bg-[#232631] text-white font-medium text-[13px] transition-all active:scale-[0.98] cursor-pointer shadow-xs">
-                    Login with password
-                  </button>
-                  <button type="button" onclick="switchLoginMode('LOGIN_OTP')" class="w-full py-3 px-4 rounded-xl bg-[#2e313d] hover:bg-[#232631] text-white font-medium text-[13px] transition-all active:scale-[0.98] cursor-pointer shadow-xs">
-                    Login with OTP
+                <div class="text-center text-xs text-slate-600 pb-1">
+                  Already have an account? 
+                  <button type="button" onclick="switchLoginMode('LOGIN_PASSWORD')" class="text-amber-700 font-bold hover:underline ml-1">
+                    Sign In
                   </button>
                 </div>
+
               </form>
             </div>
 
@@ -5800,11 +5852,11 @@
   <!-- Scripts -->
   <!-- Supabase Cloud SDK & Backend Connector -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="js/backend.js"></script>
-  <script src="js/store.js"></script>
-  <script src="js/export.js"></script>
-  <script src="js/ai-assistant.js"></script>
-  <script src="js/app.js"></script>
+  <script src="js/backend.js?v=2.6"></script>
+  <script src="js/store.js?v=2.6"></script>
+  <script src="js/export.js?v=2.6"></script>
+  <script src="js/ai-assistant.js?v=2.6"></script>
+  <script src="js/app.js?v=2.6"></script>
   <!-- ==================================================== -->
   <!-- MODAL: ADD / EDIT BANK & CASH ACCOUNT (#account-modal) -->
   <!-- ==================================================== -->

@@ -3690,9 +3690,9 @@ function switchLoginMode(mode) {
   document.querySelectorAll('.login-tab-pill').forEach(pill => {
     const pMode = pill.getAttribute('data-mode');
     if (pMode === mode) {
-      pill.className = 'login-tab-pill px-2.5 py-1 rounded transition-colors bg-primary-container text-white font-bold shadow-xs';
+      pill.className = 'login-tab-pill px-3.5 py-1.5 rounded-lg transition-all bg-primary-container text-white font-bold shadow-xs';
     } else {
-      pill.className = 'login-tab-pill px-2.5 py-1 rounded transition-colors text-on-surface-variant hover:text-on-surface';
+      pill.className = 'login-tab-pill px-3.5 py-1.5 rounded-lg transition-all text-on-surface-variant hover:text-on-surface font-medium';
     }
   });
 
@@ -3943,28 +3943,82 @@ function handleOTPLogin() {
 }
 
 function handleSignupSubmit() {
-  const bizName = document.getElementById('signup-biz-name').value.trim() || 'SASMITH TRADERS';
-  const gstin = document.getElementById('signup-biz-gstin').value.trim() || '33BZRPS8264H1ZN';
-  const pwd = document.getElementById('signup-pwd').value.trim();
+  const nameInput = document.getElementById('signup-name');
+  const emailInput = document.getElementById('signup-email');
+  const mobileInput = document.getElementById('signup-mobile');
+  const bizInput = document.getElementById('signup-biz-name');
+  const gstinInput = document.getElementById('signup-biz-gstin');
+  const pwdInput = document.getElementById('signup-pwd');
+  const confirmPwdInput = document.getElementById('signup-pwd-confirm');
+
+  const name = (nameInput ? nameInput.value : '').trim() || 'Prakash SK';
+  const email = (emailInput ? emailInput.value : '').trim() || 'prakashsk119@gmail.com';
+  const mobile = (mobileInput ? mobileInput.value : '').trim();
+  const bizName = (bizInput ? bizInput.value : '').trim() || 'SASMITH TRADERS';
+  const gstin = (gstinInput ? gstinInput.value : '').trim().toUpperCase() || '33BZRPS8264H1ZN';
+  const pwd = pwdInput ? pwdInput.value : '';
+  const confirmPwd = confirmPwdInput ? confirmPwdInput.value : '';
+
+  if (!name) {
+    triggerToast('Please enter your full name.');
+    return;
+  }
+  if (!email || !email.includes('@')) {
+    triggerToast('Please enter a valid email address.');
+    return;
+  }
+  if (!pwd) {
+    triggerToast('Please create a password for your account.');
+    return;
+  }
+  if (confirmPwd && pwd !== confirmPwd) {
+    triggerToast('Passwords do not match! Please verify your password.');
+    return;
+  }
 
   const currentUser = {
-    name: 'Prakash SK',
-    email: 'prakashsk119@gmail.com',
-    password: pwd || 'pass1234',
+    name: name,
+    email: email,
+    mobile: mobile,
+    password: pwd,
     role: 'GST Admin',
     businessName: bizName,
     gstin: gstin,
+    createdAt: new Date().toISOString(),
     loggedInAt: new Date().toISOString()
   };
 
+  // Persist registered user into localStorage
+  try {
+    let users = [];
+    const stored = localStorage.getItem('gst_registered_users');
+    if (stored) users = JSON.parse(stored);
+    const existingIdx = users.findIndex(u => u.email.toLowerCase() === email.toLowerCase());
+    if (existingIdx >= 0) {
+      users[existingIdx] = currentUser;
+    } else {
+      users.push(currentUser);
+    }
+    localStorage.setItem('gst_registered_users', JSON.stringify(users));
+  } catch (e) {}
+
   if (window.gstStore && window.gstStore.seller) {
     window.gstStore.seller.tradeName = bizName;
+    window.gstStore.seller.legalName = bizName;
     window.gstStore.seller.gstin = gstin;
+    window.gstStore.seller.email = email;
+    if (mobile) window.gstStore.seller.phone = mobile;
+    window.gstStore.seller.authorizedSignatory = name;
   }
 
   setActiveAuthUser(currentUser);
-  triggerToast(`Account created for "${bizName}"! Welcome to GST Billing.`);
+  triggerToast(`Account created successfully! Welcome to GST Billing, ${name}.`);
   setTimeout(() => {
+    initAppTheme();
+    initAppFont();
+    if (typeof initSupabaseBackend === 'function') {
+      initSupabaseBackend();
+    }
     navigateTo('dashboard');
   }, 400);
 }
