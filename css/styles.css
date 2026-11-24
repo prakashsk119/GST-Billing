@@ -3,11 +3,12 @@
     margin: 0;
     padding: 0;
     min-height: 100vh;
+    min-height: 100dvh;
     font-family: 'Inter', sans-serif;
   }
   body {
-    overscroll-behavior-y: none;
     -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
   }
 }
 
@@ -426,29 +427,43 @@ i.material-symbols-outlined,
   -webkit-font-smoothing: antialiased !important;
 }
 /* ======================================================== */
-/* MOBILE RESPONSIVE ENGINE & OVERFLOW PREVENTION */
+/* 1. UNIFIED NATIVE SCROLLING ENGINE (PHONE & SYSTEM) */
 /* ======================================================== */
 html {
-  scroll-behavior: smooth;
+  /* Use native instant scroll without artificial smooth-scroll lag */
+  scroll-behavior: auto !important;
+  overflow-x: hidden;
+  overflow-y: auto;
+  height: auto;
+  min-height: 100%;
+  -webkit-text-size-adjust: 100%;
 }
 
 html, body {
   width: 100%;
-  max-width: 100vw;
-  overflow-x: hidden;
+  max-width: 100%;
+  margin: 0;
+  padding: 0;
 }
 
 body {
-  overflow-y: auto !important;
+  /* overflow-x: clip prevents layout horizontal blowouts WITHOUT creating a nested scroll container */
+  overflow-x: clip;
+  overflow-y: visible !important;
+  min-height: 100%;
+  min-height: 100dvh;
   -webkit-overflow-scrolling: touch;
+  touch-action: manipulation;
+  overscroll-behavior-y: auto !important;
 }
 
 #main-workspace {
   width: 100%;
-  max-width: 100vw;
+  max-width: 100%;
   min-width: 0;
-  overflow-x: hidden;
-  overflow-y: visible !important;
+  overflow: visible !important;
+  min-height: 100%;
+  flex: 1 1 auto;
 }
 
 main {
@@ -456,14 +471,19 @@ main {
   max-width: 100%;
   min-width: 0;
   box-sizing: border-box;
-  overflow-y: visible !important;
+  overflow: visible !important;
+  /* Comfortable bottom clearance ensuring bottom items and buttons are never cut off */
+  padding-bottom: 7rem !important;
 }
 
 /* Touch momentum scrolling for all tables and horizontally scrollable containers */
 .overflow-x-auto {
   -webkit-overflow-scrolling: touch !important;
   max-width: 100% !important;
-  overflow-x: auto;
+  overflow-x: auto !important;
+  overflow-y: visible !important;
+  touch-action: pan-x pan-y;
+  overscroll-behavior-x: contain;
 }
 
 /* Ensure all images and SVGs respect container widths */
@@ -477,17 +497,17 @@ img, svg {
     height: 3.75rem; /* 60px */
     padding-left: 0.75rem !important;
     padding-right: 0.75rem !important;
-    max-width: 100vw !important;
+    max-width: 100% !important;
   }
   
   #header-view-title {
-    max-width: 110px;
+    max-width: 120px;
     font-size: 0.95rem;
     line-height: 1.25rem;
   }
 
   .view-container {
-    padding-bottom: 5rem;
+    padding-bottom: 6rem !important;
   }
 }
 
@@ -512,13 +532,15 @@ img, svg {
   max-width: 100% !important;
   min-width: 0 !important;
   box-sizing: border-box !important;
+  overflow-x: clip !important;
   overflow-y: visible !important;
+  padding-bottom: 6rem !important;
 }
 
 #main-workspace,
 #main-workspace > main {
   min-width: 0 !important;
-  max-width: 100vw !important;
+  max-width: 100% !important;
   box-sizing: border-box !important;
 }
 
@@ -526,7 +548,7 @@ img, svg {
 #view-login {
   min-height: calc(100vh - 4rem) !important;
   width: 100% !important;
-  max-width: 100vw !important;
+  max-width: 100% !important;
   display: flex !important;
   flex-direction: column !important;
   align-items: center !important;
