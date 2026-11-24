@@ -116,26 +116,28 @@ function exportDetailedInvoicesCSV() {
 }
 
 // WhatsApp Share Formatter
-function generateWhatsAppMessage(invoice, includeLink = true) {
+function generateWhatsAppMessage(invoice, includeLink = false) {
   if (!invoice) return '';
   const seller = window.gstStore.seller;
   const paymentStatus = invoice.status === 'PAID' ? '✅ PAID' : (invoice.status === 'OVERDUE' ? '⚠️ OVERDUE' : '⏳ PENDING PAYMENT');
   
   const origin = window.location.origin || '';
   const pathname = window.location.pathname || '';
-  const downloadLink = `${origin}${pathname}?invoice=${invoice.id || invoice.invoiceNumber}&download=true`;
+  const invNumber = invoice.invoiceNumber || invoice.id;
+  const downloadLink = `${origin}${pathname}?invoice=${encodeURIComponent(invoice.id || invNumber)}&download=true`;
+  
   const linkSection = includeLink 
-    ? `\n📥 *Click to Download Invoice Bill (PDF):*\n${downloadLink}\n` 
-    : `\n📎 *Attached Bill Document:* ${invoice.invoiceNumber}.pdf\n`;
+    ? `\n📥 *Online Bill Link:*\n${downloadLink}\n` 
+    : `\n📎 *Attached Bill Document:* ${invNumber}.pdf\n`;
 
   return `*TAX INVOICE - ${seller.companyName}*\n\n` +
     `Dear *${invoice.customerName}*,\n` +
     `Greetings! Please find below your Tax Invoice summary:\n\n` +
-    `📄 *Invoice No:* ${invoice.invoiceNumber}\n` +
+    `📄 *Invoice No:* ${invNumber}\n` +
     `📅 *Date:* ${invoice.issueDate}\n` +
     `💰 *Grand Total:* ${window.formatINR(invoice.grandTotal)}\n` +
     `📌 *Status:* ${paymentStatus}\n` +
-    `🔐 *IRN:* ${invoice.irn ? invoice.irn.substring(0, 16) + '...' : 'Verified'}\n` +
+    (invoice.irn ? `🔐 *IRN:* ${invoice.irn.substring(0, 16)}...\n` : '') +
     linkSection + `\n` +
     `🏦 *Bank Account:* ${seller.bankName}\n` +
     `A/C: ${seller.accountNumber} | IFSC: ${seller.ifsc}\n\n` +

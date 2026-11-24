@@ -3722,9 +3722,9 @@ function openWhatsAppModal(invId) {
   const customer = window.gstStore.customers.find(c => c.id === inv.customerId);
   if (phoneInput) phoneInput.value = customer ? customer.phone.replace(/[^0-9]/g, '') : '919820011223';
   
-  // Default to INCLUDING link so customer can click and download bill directly
-  if (checkbox) checkbox.checked = true;
-  const msg = generateWhatsAppMessage(inv, true);
+  // Default to NO link so pure bill document is sent without URL
+  if (checkbox) checkbox.checked = false;
+  const msg = generateWhatsAppMessage(inv, false);
   if (preview) preview.textContent = msg;
 
   if (modal) modal.classList.remove('hidden');
@@ -3734,7 +3734,7 @@ function handleWhatsAppCheckboxChange() {
   if (!currentWhatsAppInvoice) return;
   const checkbox = document.getElementById('whatsapp-include-link-checkbox');
   const preview = document.getElementById('whatsapp-message-preview');
-  const includeLink = checkbox ? checkbox.checked : true;
+  const includeLink = checkbox ? checkbox.checked : false;
   const msg = generateWhatsAppMessage(currentWhatsAppInvoice, includeLink);
   if (preview) preview.textContent = msg;
 }
@@ -3772,6 +3772,38 @@ function downloadWhatsAppInvoicePdf(targetInv = null) {
   }
 }
 
+// Copy full invoice bill image to clipboard for instant Ctrl+V into WhatsApp Web
+async function copyInvoiceImageToClipboard(inv = null) {
+  const targetInv = inv || currentWhatsAppInvoice || window.gstStore.getInvoiceById(window.gstStore.activeInvoiceId);
+  if (!targetInv) return;
+  renderInvoiceDetail(targetInv.id);
+  const element = document.getElementById('invoice-detail-card');
+  if (!element) return;
+
+  triggerToast('Preparing invoice bill image...');
+  try {
+    if (window.html2canvas) {
+      const canvas = await window.html2canvas(element, { scale: 2, useCORS: true });
+      canvas.toBlob(async (blob) => {
+        if (blob && navigator.clipboard && navigator.clipboard.write) {
+          try {
+            await navigator.clipboard.write([
+              new ClipboardItem({ 'image/png': blob })
+            ]);
+            triggerToast('Invoice image copied to clipboard! Press Ctrl+V in WhatsApp to attach.');
+          } catch (e) {
+            console.log('Clipboard write image not permitted:', e);
+            triggerToast('Bill PDF downloaded! Drag it into WhatsApp to attach.');
+          }
+        }
+      }, 'image/png');
+    }
+  } catch (err) {
+    console.log('Error generating invoice image:', err);
+  }
+}
+window.copyInvoiceImageToClipboard = copyInvoiceImageToClipboard;
+
 function triggerCustomerPdfDownload(invId = null) {
   const targetId = invId || window.gstStore.activeInvoiceId || (new URLSearchParams(window.location.search)).get('invoice') || (new URLSearchParams(window.location.search)).get('inv');
   const inv = window.gstStore.getInvoiceById(targetId);
@@ -3791,18 +3823,21 @@ function sendWhatsAppWebDirect() {
   }
 
   const checkbox = document.getElementById('whatsapp-include-link-checkbox');
-  const includeLink = checkbox ? checkbox.checked : true;
+  const includeLink = checkbox ? checkbox.checked : false;
   const inv = currentWhatsAppInvoice;
   const messageText = generateWhatsAppMessage(inv, includeLink);
 
-  // Directly download bill to computer so user has it immediately
+  // Directly download bill PDF to computer so user has it immediately
   downloadWhatsAppInvoicePdf(inv);
+
+  // Copy invoice image to clipboard so user can press Ctrl+V in WhatsApp Web
+  copyInvoiceImageToClipboard(inv);
 
   const text = encodeURIComponent(messageText);
   // Open WhatsApp Web directly in a browser tab
   window.open(`https://api.whatsapp.com/send?phone=${phone}&text=${text}`, '_blank');
   closeWhatsAppModal();
-  triggerToast('Bill PDF downloaded! WhatsApp Web opened in browser.');
+  triggerToast('Bill PDF downloaded! In WhatsApp, press Ctrl+V or drag the PDF into the chat.');
 }
 
 // Option 2: WhatsApp App (Desktop / Mobile Protocol)
@@ -3815,7 +3850,7 @@ function sendWhatsAppAppDirect() {
   }
 
   const checkbox = document.getElementById('whatsapp-include-link-checkbox');
-  const includeLink = checkbox ? checkbox.checked : true;
+  const includeLink = checkbox ? checkbox.checked : false;
   const inv = currentWhatsAppInvoice;
   const messageText = generateWhatsAppMessage(inv, includeLink);
 
@@ -3832,7 +3867,7 @@ async function shareViaDeviceNative() {
   if (!currentWhatsAppInvoice) return;
   const inv = currentWhatsAppInvoice;
   const checkbox = document.getElementById('whatsapp-include-link-checkbox');
-  const includeLink = checkbox ? checkbox.checked : true;
+  const includeLink = checkbox ? checkbox.checked : false;
   const messageText = generateWhatsAppMessage(inv, includeLink);
 
   triggerToast(`Preparing ${inv.invoiceNumber}.pdf for Device Share...`);
@@ -3877,7 +3912,7 @@ function sendWhatsAppNow() {
 function copyWhatsAppText() {
   if (currentWhatsAppInvoice) {
     const checkbox = document.getElementById('whatsapp-include-link-checkbox');
-    const includeLink = checkbox ? checkbox.checked : true;
+    const includeLink = checkbox ? checkbox.checked : false;
     navigator.clipboard.writeText(generateWhatsAppMessage(currentWhatsAppInvoice, includeLink));
     triggerToast('WhatsApp message text copied!');
   }
