@@ -120,7 +120,7 @@
     };
   </script>
   
-  <link rel="stylesheet" href="css/styles.css?v=2.4">
+  <link rel="stylesheet" href="css/styles.css?v=2.5">
 </head>
 
 <body class="bg-surface font-body-md text-on-surface selection:bg-secondary-fixed min-h-screen overflow-x-hidden w-full max-w-full">
@@ -4533,21 +4533,21 @@
       <section id="view-login" class="view-container hidden flex flex-col justify-center items-center py-4 min-h-[calc(100vh-5rem)]">
         
         <!-- Top Quick Nav Pill -->
-        <div class="w-full max-w-4xl flex items-center justify-between pb-4 px-2 no-print">
-          <button onclick="navigateTo('dashboard')" class="flex items-center gap-1.5 text-body-sm text-on-surface-variant hover:text-on-surface font-semibold bg-surface-container-low px-3 py-1.5 rounded-lg border border-outline-variant/30 transition-all active:scale-95">
-            <span class="material-symbols-outlined text-[18px]">arrow_back</span>
-            <span>Return to Dashboard</span>
+        <div class="auth-nav-container w-full max-w-[440px] mx-auto flex items-center justify-between pb-3 px-1 no-print">
+          <button onclick="navigateTo('dashboard')" class="flex items-center gap-1.5 text-xs text-on-surface-variant hover:text-on-surface font-semibold bg-surface-container-low hover:bg-surface-container px-3 py-1.5 rounded-lg border border-outline-variant/30 transition-all active:scale-95 shadow-2xs">
+            <span class="material-symbols-outlined text-[16px]">arrow_back</span>
+            <span>Dashboard</span>
           </button>
-          <div class="flex items-center gap-1 bg-surface-container-low p-1 rounded-lg border border-outline-variant/30 text-label-sm font-semibold">
-            <button onclick="switchLoginMode('LOGIN_PASSWORD')" class="login-tab-pill px-2.5 py-1 rounded transition-colors text-on-surface" data-mode="LOGIN_PASSWORD">Password</button>
-            <button onclick="switchLoginMode('LOGIN_OTP')" class="login-tab-pill px-2.5 py-1 rounded transition-colors text-on-surface-variant" data-mode="LOGIN_OTP">OTP</button>
-            <button onclick="switchLoginMode('SET_PASSWORD')" class="login-tab-pill px-2.5 py-1 rounded transition-colors text-on-surface-variant" data-mode="SET_PASSWORD">Set Password</button>
-            <button onclick="switchLoginMode('SIGNUP')" class="login-tab-pill px-2.5 py-1 rounded transition-colors text-on-surface-variant" data-mode="SIGNUP">Sign Up</button>
+          <div class="flex items-center gap-0.5 bg-surface-container-low p-1 rounded-lg border border-outline-variant/30 text-[11px] font-semibold">
+            <button onclick="switchLoginMode('LOGIN_PASSWORD')" class="login-tab-pill px-2 py-1 rounded transition-colors text-on-surface" data-mode="LOGIN_PASSWORD">Password</button>
+            <button onclick="switchLoginMode('LOGIN_OTP')" class="login-tab-pill px-2 py-1 rounded transition-colors text-on-surface-variant" data-mode="LOGIN_OTP">OTP</button>
+            <button onclick="switchLoginMode('SET_PASSWORD')" class="login-tab-pill px-2 py-1 rounded transition-colors text-on-surface-variant" data-mode="SET_PASSWORD">Reset</button>
+            <button onclick="switchLoginMode('SIGNUP')" class="login-tab-pill px-2 py-1 rounded transition-colors text-on-surface-variant" data-mode="SIGNUP">Sign Up</button>
           </div>
         </div>
 
-        <!-- Authentication Card (Clean, Centered GST Billing Layout) -->
-        <div class="w-full max-w-lg bg-surface-container-lowest rounded-3xl shadow-2xl border border-outline-variant/30 overflow-hidden p-6 sm:p-10 relative">
+        <!-- Authentication Card (Clean, Centered Responsive GST Billing Layout) -->
+        <div class="auth-card-container w-full max-w-[440px] mx-auto bg-surface-container-lowest rounded-2xl sm:rounded-3xl shadow-xl sm:shadow-2xl border border-outline-variant/30 overflow-hidden p-6 sm:p-8 relative">
           
           <!-- Brand Header -->
           <div class="text-center mb-6">
