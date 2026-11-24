@@ -3722,8 +3722,9 @@ function openWhatsAppModal(invId) {
   const customer = window.gstStore.customers.find(c => c.id === inv.customerId);
   if (phoneInput) phoneInput.value = customer ? customer.phone.replace(/[^0-9]/g, '') : '919820011223';
   
-  const includeLink = checkbox ? checkbox.checked : true;
-  const msg = generateWhatsAppMessage(inv, includeLink);
+  // Default to NOT including link (direct bill download mode as requested)
+  if (checkbox) checkbox.checked = false;
+  const msg = generateWhatsAppMessage(inv, false);
   if (preview) preview.textContent = msg;
 
   if (modal) modal.classList.remove('hidden');
@@ -3733,7 +3734,7 @@ function handleWhatsAppCheckboxChange() {
   if (!currentWhatsAppInvoice) return;
   const checkbox = document.getElementById('whatsapp-include-link-checkbox');
   const preview = document.getElementById('whatsapp-message-preview');
-  const includeLink = checkbox ? checkbox.checked : true;
+  const includeLink = checkbox ? checkbox.checked : false;
   const msg = generateWhatsAppMessage(currentWhatsAppInvoice, includeLink);
   if (preview) preview.textContent = msg;
 }
@@ -3746,7 +3747,7 @@ function closeWhatsAppModal() {
 function downloadWhatsAppInvoicePdf() {
   if (!currentWhatsAppInvoice) return;
   const inv = currentWhatsAppInvoice;
-  triggerToast(`Preparing ${inv.invoiceNumber}.pdf...`);
+  triggerToast(`Downloading ${inv.invoiceNumber}.pdf...`);
 
   // Render detail view to populate invoice card
   renderInvoiceDetail(inv.id);
@@ -3761,7 +3762,7 @@ function downloadWhatsAppInvoicePdf() {
       jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
     };
     window.html2pdf().set(opt).from(element).save().then(() => {
-      triggerToast(`Downloaded ${inv.invoiceNumber}.pdf ready to attach!`);
+      triggerToast(`Downloaded ${inv.invoiceNumber}.pdf directly to your computer!`);
     }).catch(err => {
       console.warn('html2pdf fallback to print', err);
       printInvoice(inv.id);
@@ -3771,7 +3772,8 @@ function downloadWhatsAppInvoicePdf() {
   }
 }
 
-function sendWhatsAppNow() {
+// Option 1: WhatsApp Web (Directly in Browser Tab + Auto-Download Bill)
+function sendWhatsAppWebDirect() {
   if (!currentWhatsAppInvoice) return;
   const phoneInput = document.getElementById('whatsapp-phone-input');
   let phone = phoneInput ? phoneInput.value.trim().replace(/[^0-9]/g, '') : '';
@@ -3780,21 +3782,93 @@ function sendWhatsAppNow() {
   }
 
   const checkbox = document.getElementById('whatsapp-include-link-checkbox');
-  const includeLink = checkbox ? checkbox.checked : true;
+  const includeLink = checkbox ? checkbox.checked : false;
   const inv = currentWhatsAppInvoice;
   const messageText = generateWhatsAppMessage(inv, includeLink);
 
+  // Directly download bill to computer so user has it immediately
+  downloadWhatsAppInvoicePdf();
+
   const text = encodeURIComponent(messageText);
-  // Direct WhatsApp Web in browser - opens tab seamlessly
+  // Open WhatsApp Web directly in a browser tab
   window.open(`https://api.whatsapp.com/send?phone=${phone}&text=${text}`, '_blank');
   closeWhatsAppModal();
-  triggerToast('WhatsApp Web opened in browser!');
+  triggerToast('Bill PDF downloaded! WhatsApp Web opened in browser.');
+}
+
+// Option 2: WhatsApp App (Desktop / Mobile Protocol)
+function sendWhatsAppAppDirect() {
+  if (!currentWhatsAppInvoice) return;
+  const phoneInput = document.getElementById('whatsapp-phone-input');
+  let phone = phoneInput ? phoneInput.value.trim().replace(/[^0-9]/g, '') : '';
+  if (phone.length === 10) {
+    phone = '91' + phone;
+  }
+
+  const checkbox = document.getElementById('whatsapp-include-link-checkbox');
+  const includeLink = checkbox ? checkbox.checked : false;
+  const inv = currentWhatsAppInvoice;
+  const messageText = generateWhatsAppMessage(inv, includeLink);
+
+  downloadWhatsAppInvoicePdf();
+
+  const text = encodeURIComponent(messageText);
+  window.location.href = `whatsapp://send?phone=${phone}&text=${text}`;
+  closeWhatsAppModal();
+  triggerToast('Bill PDF downloaded! Opening WhatsApp application...');
+}
+
+// Option 3: Windows / OS Device Share (with attached PDF)
+async function shareViaDeviceNative() {
+  if (!currentWhatsAppInvoice) return;
+  const inv = currentWhatsAppInvoice;
+  const checkbox = document.getElementById('whatsapp-include-link-checkbox');
+  const includeLink = checkbox ? checkbox.checked : false;
+  const messageText = generateWhatsAppMessage(inv, includeLink);
+
+  triggerToast(`Preparing ${inv.invoiceNumber}.pdf for Device Share...`);
+  renderInvoiceDetail(inv.id);
+  const element = document.getElementById('invoice-detail-card');
+
+  if (navigator.share && window.html2pdf && element) {
+    try {
+      const opt = {
+        margin: [6, 6, 6, 6],
+        filename: `${inv.invoiceNumber}.pdf`,
+        image: { type: 'jpeg', quality: 0.98 },
+        html2canvas: { scale: 2, useCORS: true },
+        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+      };
+      const pdfBlob = await window.html2pdf().set(opt).from(element).outputPdf('blob');
+      const pdfFile = new File([pdfBlob], `${inv.invoiceNumber}.pdf`, { type: 'application/pdf' });
+
+      if (navigator.canShare && navigator.canShare({ files: [pdfFile] })) {
+        await navigator.share({
+          files: [pdfFile],
+          title: `Tax Invoice ${inv.invoiceNumber}`,
+          text: messageText
+        });
+        closeWhatsAppModal();
+        triggerToast('Shared bill with attached PDF!');
+        return;
+      }
+    } catch (e) {
+      console.log('Device share cancelled or not completed', e);
+    }
+  }
+
+  // Fallback if native share fails or not supported
+  downloadWhatsAppInvoicePdf();
+}
+
+function sendWhatsAppNow() {
+  sendWhatsAppWebDirect();
 }
 
 function copyWhatsAppText() {
   if (currentWhatsAppInvoice) {
     const checkbox = document.getElementById('whatsapp-include-link-checkbox');
-    const includeLink = checkbox ? checkbox.checked : true;
+    const includeLink = checkbox ? checkbox.checked : false;
     navigator.clipboard.writeText(generateWhatsAppMessage(currentWhatsAppInvoice, includeLink));
     triggerToast('WhatsApp message text copied!');
   }
