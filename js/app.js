@@ -3795,6 +3795,7 @@ function handleSaveNewPassword() {
 
   initAppTheme();
   initAppFont();
+  applyAuthUserProfile();
   if (typeof initSupabaseBackend === 'function') {
     initSupabaseBackend();
   }
@@ -3802,171 +3803,183 @@ function handleSaveNewPassword() {
   }, 400);
 }
 
+// ==============================================
+// AUTHENTICATION & USER SESSION ENGINE
+// ==============================================
+const DEFAULT_AUTH_USER = {
+  name: 'Prakash SK',
+  email: 'prakashsk119@gmail.com',
+  password: 'pass1234',
+  role: 'GST Admin',
+  businessName: 'SASMITH TRADERS',
+  gstin: '33BZRPS8264H1ZN'
+};
+
+function getActiveAuthUser() {
+  try {
+    const raw = localStorage.getItem('gst_active_user');
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      if (parsed && parsed.email) return parsed;
+    }
+  } catch (e) {}
+  return DEFAULT_AUTH_USER;
+}
+
+function setActiveAuthUser(user) {
+  try {
+    localStorage.setItem('gst_active_user', JSON.stringify(user));
+  } catch (e) {}
+  applyAuthUserProfile(user);
+}
+
+function applyAuthUserProfile(user = getActiveAuthUser()) {
+  if (!user || !user.email) user = DEFAULT_AUTH_USER;
+
+  const displayName = user.name || (user.email.includes('@') ? user.email.split('@')[0] : user.email);
+  const initials = displayName
+    .split(/[\s._-]+/)
+    .filter(Boolean)
+    .map(p => p[0].toUpperCase())
+    .slice(0, 2)
+    .join('') || 'PK';
+
+  // 1. Header Dropdown User Details
+  const headerName = document.getElementById('header-user-name');
+  if (headerName) headerName.textContent = displayName;
+
+  const headerEmail = document.getElementById('header-user-email');
+  if (headerEmail) headerEmail.textContent = user.email;
+
+  const headerRole = document.getElementById('header-user-role');
+  if (headerRole) headerRole.textContent = user.role || 'GST Admin';
+
+  const headerInitials = document.getElementById('header-user-initials');
+  if (headerInitials) headerInitials.textContent = initials;
+
+  const headerCompany = document.getElementById('header-company-name');
+  if (headerCompany && user.businessName) headerCompany.textContent = user.businessName;
+
+  const headerGstin = document.getElementById('active-company-gstin');
+  if (headerGstin && user.gstin) headerGstin.textContent = user.gstin;
+
+  // 2. Sidebar Footer User Details
+  const sidebarName = document.getElementById('sidebar-user-name');
+  if (sidebarName) sidebarName.textContent = displayName;
+
+  const sidebarEmail = document.getElementById('sidebar-user-email');
+  if (sidebarEmail) sidebarEmail.textContent = user.email;
+
+  const sidebarAvatar = document.getElementById('sidebar-user-avatar');
+  if (sidebarAvatar) sidebarAvatar.textContent = initials;
+
+  // 3. Pre-fill login inputs with active user credentials
+  const loginEmail = document.getElementById('login-email');
+  if (loginEmail && (!loginEmail.value || loginEmail.value === 'admin@apexlogistics.in')) {
+    loginEmail.value = user.email;
+  }
+}
+
 function handlePasswordLogin() {
-  const email = document.getElementById('login-email').value.trim();
-  triggerToast(`Authenticated as ${email}! Loading ledger...`);
+  const emailInput = document.getElementById('login-email');
+  const pwdInput = document.getElementById('login-pwd');
+  const email = (emailInput ? emailInput.value : '').trim();
+  const password = pwdInput ? pwdInput.value : '';
+
+  if (!email) {
+    triggerToast('Please enter your email or mobile number.');
+    return;
+  }
+
+  // Determine user name
+  let name = 'Prakash SK';
+  if (email.toLowerCase() === 'prakashsk119@gmail.com') {
+    name = 'Prakash SK';
+  } else if (email.includes('@')) {
+    const rawUsername = email.split('@')[0];
+    name = rawUsername.replace(/[._]/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+  } else {
+    name = `User (${email})`;
+  }
+
+  const currentUser = {
+    name: name,
+    email: email,
+    password: password,
+    role: 'GST Admin',
+    businessName: window.gstStore?.seller?.tradeName || 'SASMITH TRADERS',
+    gstin: window.gstStore?.seller?.gstin || '33BZRPS8264H1ZN',
+    loggedInAt: new Date().toISOString()
+  };
+
+  setActiveAuthUser(currentUser);
+  triggerToast(`Welcome back, ${name}! Signed in to your workspace.`);
+
   setTimeout(() => {
-    const challanSearch = document.getElementById('challan-search-input');
-  if (challanSearch) {
-    challanSearch.addEventListener('input', (e) => {
-      handleDeliveryChallanSearch(e.target.value);
-    });
-  }
-
-  const challanBuyerSelect = document.getElementById('create-challan-buyer-select');
-  if (challanBuyerSelect) {
-    challanBuyerSelect.addEventListener('change', handleDeliveryChallanBuyerChange);
-  }
-
-  const challanDirectionOut = document.getElementById('challan-direction-outward');
-  const challanDirectionIn = document.getElementById('challan-direction-inward');
-  if (challanDirectionOut) {
-    challanDirectionOut.addEventListener('change', () => { currentChallanDirection = 'Delivery Challan'; });
-  }
-  if (challanDirectionIn) {
-    challanDirectionIn.addEventListener('change', () => { currentChallanDirection = 'Inward Delivery Challan'; });
-  }
-
-  const challanTypeSelect = document.getElementById('create-challan-type');
-  if (challanTypeSelect) {
-    challanTypeSelect.addEventListener('change', (e) => {
-      currentChallanSupplyType = e.target.value;
-    });
-  }
-
-  initAppTheme();
-  initAppFont();
-  if (typeof initSupabaseBackend === 'function') {
-    initSupabaseBackend();
-  }
-  navigateTo('dashboard');
+    initAppTheme();
+    initAppFont();
+    if (typeof initSupabaseBackend === 'function') {
+      initSupabaseBackend();
+    }
+    navigateTo('dashboard');
   }, 350);
 }
 
 function handleOTPLogin() {
-  const phone = document.getElementById('otp-mobile').value.trim();
-  triggerToast(`OTP Verified for +91 ${phone}!`);
+  const phone = document.getElementById('otp-mobile').value.trim() || '9876543210';
+  const currentUser = {
+    name: 'Prakash SK',
+    email: `+91 ${phone}`,
+    role: 'GST Admin',
+    businessName: window.gstStore?.seller?.tradeName || 'SASMITH TRADERS',
+    gstin: window.gstStore?.seller?.gstin || '33BZRPS8264H1ZN',
+    loggedInAt: new Date().toISOString()
+  };
+  setActiveAuthUser(currentUser);
+  triggerToast(`OTP Verified! Signed in as ${currentUser.name}`);
   setTimeout(() => {
-    const challanSearch = document.getElementById('challan-search-input');
-  if (challanSearch) {
-    challanSearch.addEventListener('input', (e) => {
-      handleDeliveryChallanSearch(e.target.value);
-    });
-  }
-
-  const challanBuyerSelect = document.getElementById('create-challan-buyer-select');
-  if (challanBuyerSelect) {
-    challanBuyerSelect.addEventListener('change', handleDeliveryChallanBuyerChange);
-  }
-
-  const challanDirectionOut = document.getElementById('challan-direction-outward');
-  const challanDirectionIn = document.getElementById('challan-direction-inward');
-  if (challanDirectionOut) {
-    challanDirectionOut.addEventListener('change', () => { currentChallanDirection = 'Delivery Challan'; });
-  }
-  if (challanDirectionIn) {
-    challanDirectionIn.addEventListener('change', () => { currentChallanDirection = 'Inward Delivery Challan'; });
-  }
-
-  const challanTypeSelect = document.getElementById('create-challan-type');
-  if (challanTypeSelect) {
-    challanTypeSelect.addEventListener('change', (e) => {
-      currentChallanSupplyType = e.target.value;
-    });
-  }
-
-  initAppTheme();
-  initAppFont();
-  if (typeof initSupabaseBackend === 'function') {
-    initSupabaseBackend();
-  }
-  navigateTo('dashboard');
+    navigateTo('dashboard');
   }, 350);
 }
 
 function handleSignupSubmit() {
   const bizName = document.getElementById('signup-biz-name').value.trim() || 'SASMITH TRADERS';
+  const gstin = document.getElementById('signup-biz-gstin').value.trim() || '33BZRPS8264H1ZN';
+  const pwd = document.getElementById('signup-pwd').value.trim();
+
+  const currentUser = {
+    name: 'Prakash SK',
+    email: 'prakashsk119@gmail.com',
+    password: pwd || 'pass1234',
+    role: 'GST Admin',
+    businessName: bizName,
+    gstin: gstin,
+    loggedInAt: new Date().toISOString()
+  };
+
+  if (window.gstStore && window.gstStore.seller) {
+    window.gstStore.seller.tradeName = bizName;
+    window.gstStore.seller.gstin = gstin;
+  }
+
+  setActiveAuthUser(currentUser);
   triggerToast(`Account created for "${bizName}"! Welcome to GST Billing.`);
   setTimeout(() => {
-    const challanSearch = document.getElementById('challan-search-input');
-  if (challanSearch) {
-    challanSearch.addEventListener('input', (e) => {
-      handleDeliveryChallanSearch(e.target.value);
-    });
-  }
-
-  const challanBuyerSelect = document.getElementById('create-challan-buyer-select');
-  if (challanBuyerSelect) {
-    challanBuyerSelect.addEventListener('change', handleDeliveryChallanBuyerChange);
-  }
-
-  const challanDirectionOut = document.getElementById('challan-direction-outward');
-  const challanDirectionIn = document.getElementById('challan-direction-inward');
-  if (challanDirectionOut) {
-    challanDirectionOut.addEventListener('change', () => { currentChallanDirection = 'Delivery Challan'; });
-  }
-  if (challanDirectionIn) {
-    challanDirectionIn.addEventListener('change', () => { currentChallanDirection = 'Inward Delivery Challan'; });
-  }
-
-  const challanTypeSelect = document.getElementById('create-challan-type');
-  if (challanTypeSelect) {
-    challanTypeSelect.addEventListener('change', (e) => {
-      currentChallanSupplyType = e.target.value;
-    });
-  }
-
-  initAppTheme();
-  initAppFont();
-  if (typeof initSupabaseBackend === 'function') {
-    initSupabaseBackend();
-  }
-  navigateTo('dashboard');
+    navigateTo('dashboard');
   }, 400);
 }
 
+function handleSignOut() {
+  triggerToast('Signed out of GST Billing.');
+  navigateTo('login', 'LOGIN_PASSWORD');
+}
+
 function quickDemoLogin(role = 'admin') {
-  if (role === 'admin') {
-    triggerToast('Signing in: SASMITH TRADERS (Rajesh Sen - CA / Admin)...');
-  } else {
-    triggerToast('Signing in: Reliance Retail (Client Portal)...');
-  }
+  const user = DEFAULT_AUTH_USER;
+  setActiveAuthUser(user);
+  triggerToast(`Signed in: ${user.businessName} (${user.name})`);
   setTimeout(() => {
-    const challanSearch = document.getElementById('challan-search-input');
-  if (challanSearch) {
-    challanSearch.addEventListener('input', (e) => {
-      handleDeliveryChallanSearch(e.target.value);
-    });
-  }
-
-  const challanBuyerSelect = document.getElementById('create-challan-buyer-select');
-  if (challanBuyerSelect) {
-    challanBuyerSelect.addEventListener('change', handleDeliveryChallanBuyerChange);
-  }
-
-  const challanDirectionOut = document.getElementById('challan-direction-outward');
-  const challanDirectionIn = document.getElementById('challan-direction-inward');
-  if (challanDirectionOut) {
-    challanDirectionOut.addEventListener('change', () => { currentChallanDirection = 'Delivery Challan'; });
-  }
-  if (challanDirectionIn) {
-    challanDirectionIn.addEventListener('change', () => { currentChallanDirection = 'Inward Delivery Challan'; });
-  }
-
-  const challanTypeSelect = document.getElementById('create-challan-type');
-  if (challanTypeSelect) {
-    challanTypeSelect.addEventListener('change', (e) => {
-      currentChallanSupplyType = e.target.value;
-    });
-  }
-
-  initAppTheme();
-  initAppFont();
-  if (typeof initSupabaseBackend === 'function') {
-    initSupabaseBackend();
-  }
-  navigateTo('dashboard');
-    triggerToast('Welcome back! Live GST data synchronized.');
+    navigateTo('dashboard');
   }, 350);
 }
 
@@ -6845,6 +6858,7 @@ window.addEventListener('DOMContentLoaded', () => {
 
   initAppTheme();
   initAppFont();
+  applyAuthUserProfile();
   if (typeof initSupabaseBackend === 'function') {
     initSupabaseBackend();
   }
