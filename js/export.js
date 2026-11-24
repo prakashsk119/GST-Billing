@@ -116,10 +116,16 @@ function exportDetailedInvoicesCSV() {
 }
 
 // WhatsApp Share Formatter
-function generateWhatsAppMessage(invoice) {
+function generateWhatsAppMessage(invoice, includeLink = true) {
+  if (!invoice) return '';
   const seller = window.gstStore.seller;
   const paymentStatus = invoice.status === 'PAID' ? '✅ PAID' : (invoice.status === 'OVERDUE' ? '⚠️ OVERDUE' : '⏳ PENDING PAYMENT');
   
+  const origin = window.location.origin || '';
+  const pathname = window.location.pathname || '';
+  const directLink = `${origin}${pathname}?invoice=${invoice.id || invoice.invoiceNumber}`;
+  const linkSection = includeLink ? `\n📎 *Attached Document:* ${invoice.invoiceNumber}.pdf\n🔗 *View & Download Invoice:* ${directLink}\n` : `\n📎 *Attached Document:* ${invoice.invoiceNumber}.pdf\n`;
+
   return `*TAX INVOICE - ${seller.companyName}*\n\n` +
     `Dear *${invoice.customerName}*,\n` +
     `Greetings! Please find below your Tax Invoice summary:\n\n` +
@@ -127,7 +133,8 @@ function generateWhatsAppMessage(invoice) {
     `📅 *Date:* ${invoice.issueDate}\n` +
     `💰 *Grand Total:* ${window.formatINR(invoice.grandTotal)}\n` +
     `📌 *Status:* ${paymentStatus}\n` +
-    `🔐 *IRN:* ${invoice.irn ? invoice.irn.substring(0, 16) + '...' : 'Verified'}\n\n` +
+    `🔐 *IRN:* ${invoice.irn ? invoice.irn.substring(0, 16) + '...' : 'Verified'}\n` +
+    linkSection + `\n` +
     `🏦 *Bank Account:* ${seller.bankName}\n` +
     `A/C: ${seller.accountNumber} | IFSC: ${seller.ifsc}\n\n` +
     `Thank you for your business!\n` +

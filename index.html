@@ -5167,21 +5167,55 @@
           <input id="whatsapp-phone-input" type="text" class="w-full h-10 px-3 bg-surface-container-low rounded-lg font-mono text-body-md text-on-surface border border-outline-variant/40 outline-none font-bold" value="919820011223" />
         </div>
 
+        <!-- Attached Invoice Document Box -->
+        <div class="p-3 bg-emerald-50 dark:bg-emerald-950/40 rounded-xl border border-emerald-300 dark:border-emerald-700 flex items-center justify-between gap-3">
+          <div class="flex items-center gap-2.5 overflow-hidden">
+            <div class="w-10 h-10 rounded-lg bg-emerald-600 text-white flex items-center justify-center shrink-0 shadow-xs">
+              <span class="material-symbols-outlined text-[22px]">picture_as_pdf</span>
+            </div>
+            <div class="min-w-0">
+              <div class="flex items-center gap-1.5">
+                <span class="text-[10px] font-bold uppercase tracking-wider text-emerald-800 dark:text-emerald-300 bg-emerald-100 dark:bg-emerald-900/60 px-1.5 py-0.2 rounded">Attached PDF</span>
+                <span id="whatsapp-attachment-filename" class="font-bold text-xs text-on-surface truncate">INV-2026-088.pdf</span>
+              </div>
+              <p class="text-[11px] text-emerald-700 dark:text-emerald-400 mt-0.5">GST Tax Invoice PDF document ready to attach</p>
+            </div>
+          </div>
+          <button type="button" onclick="downloadWhatsAppInvoicePdf()" class="px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs flex items-center gap-1 shadow-xs transition-transform active:scale-95 cursor-pointer shrink-0" title="Download invoice PDF">
+            <span class="material-symbols-outlined text-[16px]">download</span>
+            <span>Download PDF</span>
+          </button>
+        </div>
+
+        <div class="flex items-center gap-2">
+          <input type="checkbox" id="whatsapp-include-link-checkbox" checked onchange="handleWhatsAppCheckboxChange()" class="w-4 h-4 rounded text-emerald-600 focus:ring-emerald-500 border-outline-variant/50 cursor-pointer">
+          <label for="whatsapp-include-link-checkbox" class="text-xs text-on-surface font-semibold cursor-pointer select-none">
+            Include direct view & download invoice link in message
+          </label>
+        </div>
+
         <div>
           <label class="text-label-sm font-semibold text-on-surface-variant block mb-1">Message Preview:</label>
-          <pre id="whatsapp-message-preview" class="p-3 bg-surface-container-low rounded-lg text-body-sm font-mono text-on-surface-variant whitespace-pre-wrap max-h-48 overflow-y-auto border border-outline-variant/20 text-[12px] leading-relaxed"></pre>
+          <pre id="whatsapp-message-preview" class="p-3 bg-surface-container-low rounded-lg text-body-sm font-mono text-on-surface-variant whitespace-pre-wrap max-h-44 overflow-y-auto border border-outline-variant/20 text-[12px] leading-relaxed"></pre>
         </div>
       </div>
 
-      <div class="p-space-md bg-surface-container-low flex items-center justify-end gap-2 border-t border-outline-variant/20">
-        <button onclick="copyWhatsAppText()" class="px-3 py-2 rounded-lg bg-surface-container-lowest hover:bg-surface-container text-on-surface font-label-md transition-colors flex items-center gap-1 border border-outline-variant/30 font-semibold">
-          <span class="material-symbols-outlined text-[16px]">content_copy</span>
-          <span>Copy Text</span>
+      <div class="p-space-md bg-surface-container-low flex items-center justify-between gap-2 border-t border-outline-variant/20 flex-wrap">
+        <button type="button" onclick="downloadWhatsAppInvoicePdf()" class="px-3 py-2 rounded-lg bg-surface-container-lowest hover:bg-surface-container text-on-surface font-label-md transition-colors flex items-center gap-1 border border-outline-variant/30 text-xs font-semibold cursor-pointer">
+          <span class="material-symbols-outlined text-[16px] text-emerald-600">picture_as_pdf</span>
+          <span>Download PDF</span>
         </button>
-        <button onclick="sendWhatsAppNow()" class="px-4 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-label-md font-bold transition-all shadow-sm flex items-center gap-1">
-          <span class="material-symbols-outlined text-[18px]">send</span>
-          <span>Send WhatsApp</span>
-        </button>
+
+        <div class="flex items-center gap-2">
+          <button type="button" onclick="copyWhatsAppText()" class="px-3 py-2 rounded-lg bg-surface-container-lowest hover:bg-surface-container text-on-surface font-label-md transition-colors flex items-center gap-1 border border-outline-variant/30 text-xs font-semibold cursor-pointer">
+            <span class="material-symbols-outlined text-[16px]">content_copy</span>
+            <span>Copy Text</span>
+          </button>
+          <button type="button" onclick="sendWhatsAppNow()" class="px-4 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-label-md font-bold transition-all shadow-sm flex items-center gap-1.5 cursor-pointer active:scale-95 text-xs">
+            <span class="material-symbols-outlined text-[18px]">send</span>
+            <span>Send & Attach</span>
+          </button>
+        </div>
       </div>
     </div>
   </div>
@@ -5898,6 +5932,8 @@
   </div>
 
   <!-- Scripts -->
+  <!-- Client-side PDF Engine for Invoice Attachments -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
   <!-- Supabase Cloud SDK & Backend Connector -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="js/backend.js?v=2.6"></script>

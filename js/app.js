@@ -3714,14 +3714,28 @@ function openWhatsAppModal(invId) {
   const modal = document.getElementById('whatsapp-modal');
   const preview = document.getElementById('whatsapp-message-preview');
   const phoneInput = document.getElementById('whatsapp-phone-input');
+  const filenameEl = document.getElementById('whatsapp-attachment-filename');
+  const checkbox = document.getElementById('whatsapp-include-link-checkbox');
+
+  if (filenameEl) filenameEl.textContent = `${inv.invoiceNumber}.pdf`;
 
   const customer = window.gstStore.customers.find(c => c.id === inv.customerId);
   if (phoneInput) phoneInput.value = customer ? customer.phone.replace(/[^0-9]/g, '') : '919820011223';
   
-  const msg = generateWhatsAppMessage(inv);
+  const includeLink = checkbox ? checkbox.checked : true;
+  const msg = generateWhatsAppMessage(inv, includeLink);
   if (preview) preview.textContent = msg;
 
   if (modal) modal.classList.remove('hidden');
+}
+
+function handleWhatsAppCheckboxChange() {
+  if (!currentWhatsAppInvoice) return;
+  const checkbox = document.getElementById('whatsapp-include-link-checkbox');
+  const preview = document.getElementById('whatsapp-message-preview');
+  const includeLink = checkbox ? checkbox.checked : true;
+  const msg = generateWhatsAppMessage(currentWhatsAppInvoice, includeLink);
+  if (preview) preview.textContent = msg;
 }
 
 function closeWhatsAppModal() {
@@ -3729,20 +3743,104 @@ function closeWhatsAppModal() {
   if (modal) modal.classList.add('hidden');
 }
 
-function sendWhatsAppNow() {
+function downloadWhatsAppInvoicePdf() {
+  if (!currentWhatsAppInvoice) return;
+  const inv = currentWhatsAppInvoice;
+  triggerToast(`Preparing ${inv.invoiceNumber}.pdf...`);
+
+  // Render detail view to populate invoice card
+  renderInvoiceDetail(inv.id);
+  const element = document.getElementById('invoice-detail-card');
+
+  if (window.html2pdf && element) {
+    const opt = {
+      margin: [6, 6, 6, 6],
+      filename: `${inv.invoiceNumber}.pdf`,
+      image: { type: 'jpeg', quality: 0.98 },
+      html2canvas: { scale: 2, useCORS: true },
+      jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+    };
+    window.html2pdf().set(opt).from(element).save().then(() => {
+      triggerToast(`Downloaded ${inv.invoiceNumber}.pdf ready to attach!`);
+    }).catch(err => {
+      console.warn('html2pdf fallback to print', err);
+      printInvoice(inv.id);
+    });
+  } else {
+    printInvoice(inv.id);
+  }
+}
+
+async function sendWhatsAppNow() {
+  if (!currentWhatsAppInvoice) return;
   const phone = document.getElementById('whatsapp-phone-input').value.trim();
-  const text = encodeURIComponent(generateWhatsAppMessage(currentWhatsAppInvoice));
+  const checkbox = document.getElementById('whatsapp-include-link-checkbox');
+  const includeLink = checkbox ? checkbox.checked : true;
+  const inv = currentWhatsAppInvoice;
+  const messageText = generateWhatsAppMessage(inv, includeLink);
+
+  // Attempt Web Share API with PDF file if device supports it
+  if (navigator.canShare && window.html2pdf) {
+    try {
+      renderInvoiceDetail(inv.id);
+      const element = document.getElementById('invoice-detail-card');
+      const opt = {
+        margin: [6, 6, 6, 6],
+        filename: `${inv.invoiceNumber}.pdf`,
+        image: { type: 'jpeg', quality: 0.98 },
+        html2canvas: { scale: 2, useCORS: true },
+        jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+      };
+      const pdfBlob = await window.html2pdf().set(opt).from(element).outputPdf('blob');
+      const pdfFile = new File([pdfBlob], `${inv.invoiceNumber}.pdf`, { type: 'application/pdf' });
+
+      if (navigator.canShare({ files: [pdfFile] })) {
+        await navigator.share({
+          files: [pdfFile],
+          title: `Tax Invoice ${inv.invoiceNumber}`,
+          text: messageText
+        });
+        closeWhatsAppModal();
+        triggerToast('Shared invoice with attached PDF!');
+        return;
+      }
+    } catch (e) {
+      console.log('Native share declined/failed, continuing to WhatsApp Web', e);
+    }
+  }
+
+  // Trigger PDF download so user has it ready to drag/attach into chat
+  downloadWhatsAppInvoicePdf();
+
+  const text = encodeURIComponent(messageText);
   window.open(`https://api.whatsapp.com/send?phone=${phone}&text=${text}`, '_blank');
   closeWhatsAppModal();
-  triggerToast('WhatsApp sender dispatched');
+  triggerToast('WhatsApp opened! Drag the downloaded invoice PDF to attach.');
 }
 
 function copyWhatsAppText() {
   if (currentWhatsAppInvoice) {
-    navigator.clipboard.writeText(generateWhatsAppMessage(currentWhatsAppInvoice));
+    const checkbox = document.getElementById('whatsapp-include-link-checkbox');
+    const includeLink = checkbox ? checkbox.checked : true;
+    navigator.clipboard.writeText(generateWhatsAppMessage(currentWhatsAppInvoice, includeLink));
     triggerToast('WhatsApp message text copied!');
   }
 }
+
+// Deep linking to open specific invoice from WhatsApp URL
+(function checkUrlInvoiceDeepLink() {
+  try {
+    const params = new URLSearchParams(window.location.search);
+    const invId = params.get('invoice') || params.get('inv');
+    if (invId) {
+      window.addEventListener('DOMContentLoaded', () => {
+        setTimeout(() => {
+          navigateTo('invoice-detail', invId);
+        }, 350);
+      });
+    }
+  } catch (e) {}
+})();
 
 // e-Way Bill Modal
 function openEWayModal(invId = null) {
