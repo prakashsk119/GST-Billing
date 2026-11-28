@@ -4872,6 +4872,9 @@
                   <span id="otp-status-text">Invalid code entered</span>
                 </div>
 
+                <!-- Invisible/Compact Firebase reCAPTCHA Container -->
+                <div id="recaptcha-container" class="flex justify-center my-1"></div>
+
                 <!-- Verify Button -->
                 <button id="btn-verify-otp" type="submit" class="w-full py-3.5 px-4 rounded-xl bg-[#fdd428] hover:bg-[#fac710] text-slate-950 font-bold text-[16px] shadow-sm transition-transform active:scale-[0.98] cursor-pointer mt-2 flex items-center justify-center gap-2">
                   <span class="material-symbols-outlined text-[20px]">verified_user</span>
@@ -5439,17 +5442,54 @@
       <!-- Body -->
       <div class="p-5 space-y-4 text-xs text-on-surface">
         <div>
-          <label class="font-bold text-slate-800 dark:text-slate-200 text-xs mb-1 block">SMS Provider</label>
+          <label class="font-bold text-slate-800 dark:text-slate-200 text-xs mb-1 block">Authentication & SMS Engine</label>
           <select id="sms-gateway-provider" onchange="onSmsProviderChange()" class="w-full p-2.5 rounded-xl border border-slate-300 bg-white dark:bg-slate-900 font-semibold text-slate-800 dark:text-white outline-none focus:border-amber-500">
-            <option value="fast2sms" selected>Fast2SMS (Recommended for Indian +91 Numbers)</option>
+            <option value="firebase" selected>Google Firebase Phone Auth (10,000 Free Real SMS/Month)</option>
+            <option value="fast2sms">Fast2SMS (Direct Indian Carrier DLT SMS)</option>
             <option value="twilio">Twilio (International & India)</option>
-            <option value="custom">Custom Webhook / REST Endpoint</option>
-            <option value="simulation">On-Screen Live Simulation (No API Key Required)</option>
+            <option value="simulation">Direct Session Mode (Immediate 1-Click Verification)</option>
           </select>
-          <p class="text-[11px] text-slate-500 mt-1">Fast2SMS provides instant quick OTP delivery across Indian telecom operators.</p>
+          <p id="sms-provider-desc" class="text-[11px] text-slate-500 mt-1">Google Firebase dispatches real cellular OTP SMS worldwide without requiring Indian TRAI DLT registration.</p>
         </div>
 
-        <div id="sms-provider-key-wrap">
+        <!-- Firebase Config Wrap -->
+        <div id="firebase-config-wrap" class="space-y-2.5 p-3 bg-amber-50/70 rounded-xl border border-amber-200/80">
+          <div class="flex items-center justify-between">
+            <span class="font-bold text-slate-800 text-xs flex items-center gap-1">
+              <span class="material-symbols-outlined text-[15px] text-amber-600">local_fire_department</span>
+              <span>Firebase Web Credentials</span>
+            </span>
+            <a href="https://console.firebase.google.com" target="_blank" class="text-amber-800 underline font-bold text-[10px]">
+              Firebase Console ↗
+            </a>
+          </div>
+          <div class="space-y-1.5">
+            <div>
+              <label class="text-[10px] font-bold text-slate-600 uppercase block">API Key</label>
+              <input id="firebase-api-key" type="text" placeholder="AIzaSy..." class="w-full p-2 rounded-lg border border-slate-300 bg-white font-mono text-xs outline-none" />
+            </div>
+            <div class="grid grid-cols-2 gap-2">
+              <div>
+                <label class="text-[10px] font-bold text-slate-600 uppercase block">Auth Domain</label>
+                <input id="firebase-auth-domain" type="text" placeholder="project-id.firebaseapp.com" class="w-full p-2 rounded-lg border border-slate-300 bg-white font-mono text-xs outline-none" />
+              </div>
+              <div>
+                <label class="text-[10px] font-bold text-slate-600 uppercase block">Project ID</label>
+                <input id="firebase-project-id" type="text" placeholder="gst-billing-project" class="w-full p-2 rounded-lg border border-slate-300 bg-white font-mono text-xs outline-none" />
+              </div>
+            </div>
+            <div>
+              <label class="text-[10px] font-bold text-slate-600 uppercase block">App ID</label>
+              <input id="firebase-app-id" type="text" placeholder="1:1234567890:web:abcdef" class="w-full p-2 rounded-lg border border-slate-300 bg-white font-mono text-xs outline-none" />
+            </div>
+          </div>
+          <p class="text-[10px] text-slate-500 leading-tight">
+            Enable <strong>Phone</strong> in Firebase Console > Authentication > Sign-in method. You can also specify test numbers (e.g. <code>+91 6383572077</code> with code <code>123456</code>).
+          </p>
+        </div>
+
+        <!-- Fast2SMS / Twilio Key Wrap -->
+        <div id="sms-provider-key-wrap" class="hidden">
           <label class="font-bold text-slate-800 dark:text-slate-200 text-xs mb-1 block">Provider API Key / Auth Token</label>
           <div class="relative">
             <input id="sms-gateway-key" type="password" placeholder="Enter your Fast2SMS or Twilio API Key" class="w-full p-2.5 pr-10 rounded-xl border border-slate-300 bg-white dark:bg-slate-900 font-mono text-xs text-slate-800 dark:text-white outline-none focus:border-amber-500" />
@@ -6202,6 +6242,9 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
   <!-- Supabase Cloud SDK & Backend Connector -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <!-- Firebase App & Authentication SDKs for Real-Time SMS -->
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-auth-compat.js"></script>
   <script src="js/backend.js?v=2.6"></script>
   <script src="js/store.js?v=2.6"></script>
   <script src="js/export.js?v=2.6"></script>

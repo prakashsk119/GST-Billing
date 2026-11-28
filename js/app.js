@@ -4553,6 +4553,30 @@ async function sendLiveOTP() {
 
   hideOTPError();
 
+  // 1. If Firebase Phone Auth is configured, dispatch real carrier SMS via Google
+  const gwConfig = getSmsGatewayConfig();
+  if (!isEmail && gwConfig.provider === 'firebase' && ensureFirebaseInitialized()) {
+    try {
+      const appVerifier = setupFirebaseRecaptcha();
+      if (appVerifier) {
+        triggerToast(`Connecting Google Firebase Phone Auth for +91 ${cleanPhone}...`);
+        const e164Phone = `+91${cleanPhone}`;
+        const confirmationResult = await firebase.auth().signInWithPhoneNumber(e164Phone, appVerifier);
+        window.firebaseConfirmationResult = confirmationResult;
+        
+        if (bannerTitle) bannerTitle.textContent = 'Real SMS Dispatched via Firebase';
+        if (deliveryNote) deliveryNote.textContent = `Real carrier SMS sent to +91 ${cleanPhone}. Please check your phone.`;
+        triggerToast(`📲 Real SMS dispatched to +91 ${cleanPhone} via Google Firebase!`);
+        return;
+      }
+    } catch (fbErr) {
+      console.warn('Firebase Phone Auth notice:', fbErr);
+      if (deliveryNote) {
+        deliveryNote.textContent = `Firebase: ${fbErr.message || 'Check credentials'}. Session code active.`;
+      }
+    }
+  }
+
   // Dispatch via /api/send-otp
   await dispatchUnifiedOTP(target, liveCode, isEmail);
 
@@ -4821,7 +4845,51 @@ function handleOTPLogin() {
     return;
   }
 
-  // Validate exact match
+  // Firebase Confirmation Verification
+  if (window.firebaseConfirmationResult) {
+    try {
+      const verifyBtn = document.getElementById('btn-verify-otp');
+      if (verifyBtn) {
+        verifyBtn.innerHTML = '<span class="material-symbols-outlined text-[20px] animate-spin">progress_activity</span><span>Verifying with Google...</span>';
+        verifyBtn.disabled = true;
+      }
+      
+      const userCredential = await window.firebaseConfirmationResult.confirm(enteredCode);
+      const fbUser = userCredential.user;
+      
+      hideOTPError();
+      if (otpResendInterval) clearInterval(otpResendInterval);
+      if (otpExpiryInterval) clearInterval(otpExpiryInterval);
+      window.firebaseConfirmationResult = null;
+
+      const currentUser = {
+        name: 'Prakash SK',
+        email: isEmail ? contact : (fbUser && fbUser.email) || 'prakashsk119@gmail.com',
+        mobile: isEmail ? '6383572077' : contact.replace(/[^0-9]/g, '').slice(-10),
+        role: 'GST Admin',
+        businessName: window.gstStore?.seller?.tradeName || 'SASMITH TRADERS',
+        gstin: window.gstStore?.seller?.gstin || '33BZRPS8264H1ZN',
+        firebaseUid: fbUser ? fbUser.uid : null,
+        loggedInAt: new Date().toISOString()
+      };
+
+      setActiveAuthUser(currentUser);
+      triggerToast(`✓ Real-time OTP Verified via Google Firebase! Welcome back, ${currentUser.name}`);
+      setTimeout(() => navigateTo('dashboard'), 350);
+      return;
+    } catch (fbConfirmErr) {
+      console.warn('Firebase confirmation error', fbConfirmErr);
+      showOTPError('Invalid OTP code. Please enter the exact code received from Google Firebase.');
+      const verifyBtn = document.getElementById('btn-verify-otp');
+      if (verifyBtn) {
+        verifyBtn.innerHTML = '<span class="material-symbols-outlined text-[20px]">verified_user</span><span>Verify & Sign In</span>';
+        verifyBtn.disabled = false;
+      }
+      return;
+    }
+  }
+
+  // Validate exact match (Session Mode / Fast2SMS)
   if (enteredCode !== currentLiveOTP.code) {
     showOTPError(`Incorrect OTP entered (${enteredCode}). Please check your code and try again.`);
     const box1 = document.getElementById('otp-box-1');
@@ -4874,9 +4942,21 @@ function openSmsGatewayModal() {
   const testPhoneEl = document.getElementById('sms-gateway-test-phone');
   const phoneInput = document.getElementById('otp-mobile');
 
-  if (providerEl) providerEl.value = cfg.provider || 'fast2sms';
+  if (providerEl) providerEl.value = cfg.provider || 'firebase';
   if (keyEl) keyEl.value = cfg.apiKey || '';
-  if (testPhoneEl) testPhoneEl.value = (phoneInput && phoneInput.value) || cfg.testPhone || '9876543210';
+  if (testPhoneEl) testPhoneEl.value = (phoneInput && phoneInput.value) || cfg.testPhone || '6383572077';
+
+  // Load Firebase config
+  const fbCfg = getFirebaseConfig();
+  const fbApiKeyEl = document.getElementById('firebase-api-key');
+  const fbAuthDomainEl = document.getElementById('firebase-auth-domain');
+  const fbProjectIdEl = document.getElementById('firebase-project-id');
+  const fbAppIdEl = document.getElementById('firebase-app-id');
+
+  if (fbApiKeyEl) fbApiKeyEl.value = fbCfg.apiKey || '';
+  if (fbAuthDomainEl) fbAuthDomainEl.value = fbCfg.authDomain || '';
+  if (fbProjectIdEl) fbProjectIdEl.value = fbCfg.projectId || '';
+  if (fbAppIdEl) fbAppIdEl.value = fbCfg.appId || '';
 
   onSmsProviderChange();
 }
@@ -4889,9 +4969,58 @@ function closeSmsGatewayModal() {
 function getSmsGatewayConfig() {
   try {
     const raw = localStorage.getItem('gst_sms_gateway_config');
-    return raw ? JSON.parse(raw) : { provider: 'simulation', apiKey: '' };
+    return raw ? JSON.parse(raw) : { provider: 'firebase', apiKey: '' };
   } catch (e) {
-    return { provider: 'simulation', apiKey: '' };
+    return { provider: 'firebase', apiKey: '' };
+  }
+}
+
+function getFirebaseConfig() {
+  try {
+    const raw = localStorage.getItem('gst_firebase_config');
+    return raw ? JSON.parse(raw) : {
+      apiKey: '',
+      authDomain: '',
+      projectId: '',
+      appId: ''
+    };
+  } catch (e) {
+    return { apiKey: '', authDomain: '', projectId: '', appId: '' };
+  }
+}
+
+function ensureFirebaseInitialized() {
+  if (typeof firebase === 'undefined') return false;
+  const cfg = getFirebaseConfig();
+  if (!cfg || !cfg.apiKey || !cfg.projectId) return false;
+  if (!firebase.apps.length) {
+    try {
+      firebase.initializeApp(cfg);
+    } catch (e) {
+      console.warn('Firebase init error', e);
+      return false;
+    }
+  }
+  return true;
+}
+
+function setupFirebaseRecaptcha() {
+  if (typeof firebase === 'undefined' || !ensureFirebaseInitialized()) return null;
+  if (window.recaptchaVerifier) return window.recaptchaVerifier;
+  try {
+    window.recaptchaVerifier = new firebase.auth.RecaptchaVerifier('recaptcha-container', {
+      size: 'invisible',
+      callback: () => {},
+      'expired-callback': () => {
+        if (window.recaptchaVerifier) {
+          try { window.recaptchaVerifier.render(); } catch (e) {}
+        }
+      }
+    });
+    return window.recaptchaVerifier;
+  } catch (err) {
+    console.warn('reCAPTCHA notice:', err);
+    return null;
   }
 }
 
@@ -4901,31 +5030,69 @@ function saveSmsGatewayConfig() {
   const testPhoneEl = document.getElementById('sms-gateway-test-phone');
 
   const config = {
-    provider: (providerEl ? providerEl.value : 'simulation'),
+    provider: (providerEl ? providerEl.value : 'firebase'),
     apiKey: (keyEl ? keyEl.value.trim() : ''),
     testPhone: (testPhoneEl ? testPhoneEl.value.trim() : '')
   };
 
   localStorage.setItem('gst_sms_gateway_config', JSON.stringify(config));
-  triggerToast('✓ SMS Gateway settings saved!');
+
+  // Save Firebase Config
+  const fbApiKeyEl = document.getElementById('firebase-api-key');
+  const fbAuthDomainEl = document.getElementById('firebase-auth-domain');
+  const fbProjectIdEl = document.getElementById('firebase-project-id');
+  const fbAppIdEl = document.getElementById('firebase-app-id');
+
+  const fbConfig = {
+    apiKey: (fbApiKeyEl ? fbApiKeyEl.value.trim() : ''),
+    authDomain: (fbAuthDomainEl ? fbAuthDomainEl.value.trim() : ''),
+    projectId: (fbProjectIdEl ? fbProjectIdEl.value.trim() : ''),
+    appId: (fbAppIdEl ? fbAppIdEl.value.trim() : '')
+  };
+
+  localStorage.setItem('gst_firebase_config', JSON.stringify(fbConfig));
+
+  if (fbConfig.apiKey && typeof firebase !== 'undefined') {
+    ensureFirebaseInitialized();
+  }
+
+  triggerToast('✓ Authentication & SMS settings saved!');
   closeSmsGatewayModal();
 
   const deliveryNote = document.getElementById('otp-delivery-note');
   if (deliveryNote) {
-    deliveryNote.textContent = config.provider === 'fast2sms' && config.apiKey 
-      ? 'Fast2SMS Gateway connected for real SMS delivery'
-      : 'Live OTP generator ready';
+    if (config.provider === 'firebase' && fbConfig.apiKey) {
+      deliveryNote.textContent = 'Google Firebase Phone Auth connected (10,000 Free SMS/Month)';
+    } else if (config.provider === 'fast2sms' && config.apiKey) {
+      deliveryNote.textContent = 'Fast2SMS Gateway connected for direct carrier delivery';
+    } else {
+      deliveryNote.textContent = 'Real-time OTP Engine active';
+    }
   }
 }
 
 function onSmsProviderChange() {
   const providerEl = document.getElementById('sms-gateway-provider');
+  const fbWrap = document.getElementById('firebase-config-wrap');
   const keyWrap = document.getElementById('sms-provider-key-wrap');
-  if (!providerEl || !keyWrap) return;
-  if (providerEl.value === 'simulation') {
-    keyWrap.classList.add('hidden');
+  const descEl = document.getElementById('sms-provider-desc');
+  if (!providerEl) return;
+
+  const val = providerEl.value;
+  if (val === 'firebase') {
+    if (fbWrap) fbWrap.classList.remove('hidden');
+    if (keyWrap) keyWrap.classList.add('hidden');
+    if (descEl) descEl.textContent = 'Google Firebase dispatches real cellular OTP SMS worldwide without requiring Indian TRAI DLT registration.';
+  } else if (val === 'fast2sms' || val === 'twilio') {
+    if (fbWrap) fbWrap.classList.add('hidden');
+    if (keyWrap) keyWrap.classList.remove('hidden');
+    if (descEl) descEl.textContent = val === 'fast2sms' 
+      ? 'Fast2SMS provides direct OTP delivery across Indian telecom operators (DLT routing).'
+      : 'Twilio provides programmatic global SMS delivery.';
   } else {
-    keyWrap.classList.remove('hidden');
+    if (fbWrap) fbWrap.classList.add('hidden');
+    if (keyWrap) keyWrap.classList.add('hidden');
+    if (descEl) descEl.textContent = 'Direct Session Mode generates real dynamic 6-digit OTP codes with 1-click verification.';
   }
 }
 
@@ -8553,3 +8720,6 @@ window.openSmsOTP = openSmsOTP;
 window.handleContactInputChange = handleContactInputChange;
 window.showDevOTPCode = showDevOTPCode;
 window.autoFillRevealedOTP = autoFillRevealedOTP;
+window.getFirebaseConfig = getFirebaseConfig;
+window.ensureFirebaseInitialized = ensureFirebaseInitialized;
+window.setupFirebaseRecaptcha = setupFirebaseRecaptcha;
