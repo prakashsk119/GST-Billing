@@ -569,3 +569,24 @@ img, svg {
   margin-right: auto !important;
   box-sizing: border-box !important;
 }
+
+/* ======================================================== */
+/* LIVE OTP SHAKE & HIGHLIGHT ANIMATIONS */
+/* ======================================================== */
+@keyframes headShake {
+  0% { transform: translateX(0); }
+  6.5% { transform: translateX(-6px) rotateY(-9deg); }
+  18.5% { transform: translateX(5px) rotateY(7deg); }
+  31.5% { transform: translateX(-3px) rotateY(-5deg); }
+  43.5% { transform: translateX(2px) rotateY(3deg); }
+  50% { transform: translateX(0); }
+}
+
+.animate-head-shake {
+  animation: headShake 0.6s ease-in-out;
+}
+
+.otp-digit-box:focus {
+  border-color: #f59e0b !important;
+  box-shadow: 0 0 0 2px rgba(245, 158, 11, 0.25) !important;
+}
