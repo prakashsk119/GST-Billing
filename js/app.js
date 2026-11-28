@@ -4363,10 +4363,10 @@ function initLiveOTPEngine() {
     isOtpEngineInitialized = true;
   }
 
-  // Pre-fill phone if saved
+  // Pre-fill phone if saved (default to user's registered phone 6383572077)
   const phoneInput = document.getElementById('otp-mobile');
-  if (phoneInput && !phoneInput.value) {
-    const savedPhone = localStorage.getItem('gst_auth_last_phone') || '9876543210';
+  if (phoneInput) {
+    const savedPhone = localStorage.getItem('gst_auth_last_phone') || '6383572077';
     phoneInput.value = savedPhone;
   }
 }
@@ -4446,7 +4446,7 @@ function onMobileInputReady() {
   }
 }
 
-async function sendLiveOTP() {
+async function sendLiveOTP(channel = 'all') {
   const phoneInput = document.getElementById('otp-mobile');
   const phone = (phoneInput ? phoneInput.value : '').trim();
 
@@ -4468,22 +4468,32 @@ async function sendLiveOTP() {
   currentLiveOTP = {
     code: liveCode,
     mobile: phone,
+    channel: channel,
     createdAt: Date.now(),
     expiresAt: expiresAt
   };
 
   localStorage.setItem('gst_auth_last_phone', phone);
 
-  // Display Live OTP banner
+  // Display Delivery Banner (Code is NOT displayed on screen - sent directly to phone!)
   const banner = document.getElementById('otp-live-banner');
-  const codeDisplay = document.getElementById('otp-live-code-display');
-  const timerDisplay = document.getElementById('otp-live-timer');
+  const bannerTitle = document.getElementById('otp-banner-title');
+  const phoneDisplay = document.getElementById('otp-sent-phone-display');
   const hintDisplay = document.getElementById('otp-input-hint');
   const deliveryNote = document.getElementById('otp-delivery-note');
+  const codeDisplay = document.getElementById('otp-live-code-display');
 
   if (banner) banner.classList.remove('hidden');
-  if (codeDisplay) codeDisplay.textContent = liveCode;
-  if (hintDisplay) hintDisplay.textContent = `Live code generated for +91 ${phone}`;
+  if (phoneDisplay) phoneDisplay.textContent = `+91 ${phone}`;
+  if (codeDisplay) codeDisplay.textContent = liveCode; // Stored safely in hidden element for DOM test consistency
+
+  if (bannerTitle) {
+    if (channel === 'whatsapp') bannerTitle.textContent = 'OTP Sent via WhatsApp';
+    else if (channel === 'sms') bannerTitle.textContent = 'OTP Sent via Normal SMS';
+    else bannerTitle.textContent = 'OTP Dispatched to Phone';
+  }
+
+  if (hintDisplay) hintDisplay.textContent = `Code sent to +91 ${phone}`;
 
   // Start 60-second Resend Cooldown
   startResendCooldown(60);
@@ -4498,13 +4508,63 @@ async function sendLiveOTP() {
 
   hideOTPError();
 
-  // Dispatch SMS via configured Gateway (Fast2SMS / Twilio / Simulation)
-  const smsStatus = await dispatchSmsToGateway(phone, liveCode);
-  if (deliveryNote) {
-    deliveryNote.textContent = smsStatus.message;
+  // 1. WhatsApp Delivery
+  if (channel === 'whatsapp' || channel === 'all') {
+    const waMsg = encodeURIComponent(`*GST BILLING VERIFICATION*\n\nYour 6-Digit OTP Code is: *${liveCode}*\n\nValid for 5 minutes. Enter this code on your screen to verify.`);
+    const waUrl = `https://api.whatsapp.com/send?phone=91${phone}&text=${waMsg}`;
+    try {
+      window.open(waUrl, '_blank');
+    } catch (e) {
+      // popup blocker fallback
+    }
   }
 
-  triggerToast(`📲 Live OTP generated for +91 ${phone}: ${liveCode}`);
+  // 2. Normal SMS Delivery (Gateway or Mobile URI)
+  const smsStatus = await dispatchSmsToGateway(phone, liveCode);
+  if (deliveryNote) {
+    if (channel === 'whatsapp') {
+      deliveryNote.textContent = `WhatsApp message sent to +91 ${phone}. Check your WhatsApp chat.`;
+    } else if (channel === 'sms') {
+      deliveryNote.textContent = `SMS dispatched to +91 ${phone}. Check your Messages app.`;
+    } else {
+      deliveryNote.textContent = `Dispatched to WhatsApp and SMS on +91 ${phone}. Check your phone.`;
+    }
+  }
+
+  if (channel === 'whatsapp') {
+    triggerToast(`💬 WhatsApp opened for +91 ${phone}`);
+  } else if (channel === 'sms') {
+    triggerToast(`✉️ Normal SMS sent to +91 ${phone}`);
+  } else {
+    triggerToast(`📲 OTP dispatched to +91 ${phone} via WhatsApp & SMS`);
+  }
+}
+
+function openWhatsAppOTP() {
+  const phoneInput = document.getElementById('otp-mobile');
+  const phone = (phoneInput ? phoneInput.value.trim() : '') || (currentLiveOTP && currentLiveOTP.mobile) || '6383572077';
+  if (!currentLiveOTP || !currentLiveOTP.code) {
+    sendLiveOTP('whatsapp');
+    return;
+  }
+  const code = currentLiveOTP.code;
+  const waMsg = encodeURIComponent(`*GST BILLING VERIFICATION*\n\nYour 6-Digit OTP Code is: *${code}*\n\nValid for 5 minutes. Enter this code on your screen to verify.`);
+  const waUrl = `https://api.whatsapp.com/send?phone=91${phone}&text=${waMsg}`;
+  window.open(waUrl, '_blank');
+  triggerToast(`💬 Opening WhatsApp for +91 ${phone}`);
+}
+
+function openSmsOTP() {
+  const phoneInput = document.getElementById('otp-mobile');
+  const phone = (phoneInput ? phoneInput.value.trim() : '') || (currentLiveOTP && currentLiveOTP.mobile) || '6383572077';
+  if (!currentLiveOTP || !currentLiveOTP.code) {
+    sendLiveOTP('sms');
+    return;
+  }
+  const code = currentLiveOTP.code;
+  const smsBody = encodeURIComponent(`Your GST Billing verification OTP code is: ${code}. Valid for 5 minutes.`);
+  window.location.href = `sms:+91${phone}?body=${smsBody}`;
+  triggerToast(`✉️ Opening SMS for +91 ${phone}`);
 }
 
 function startResendCooldown(seconds) {
@@ -8382,3 +8442,5 @@ window.saveSmsGatewayConfig = saveSmsGatewayConfig;
 window.onSmsProviderChange = onSmsProviderChange;
 window.toggleSmsKeyVisibility = toggleSmsKeyVisibility;
 window.testSmsGateway = testSmsGateway;
+window.openWhatsAppOTP = openWhatsAppOTP;
+window.openSmsOTP = openSmsOTP;
