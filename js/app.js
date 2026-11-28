@@ -4521,19 +4521,8 @@ async function sendLiveOTP() {
   if (phoneDisplay) phoneDisplay.textContent = isEmail ? target : `+91 ${cleanPhone}`;
   if (codeDisplay) codeDisplay.textContent = liveCode;
 
-  if (bannerTitle) {
-    bannerTitle.textContent = isEmail ? 'OTP Sent to Email' : 'OTP Sent via SMS';
-  }
-
-  if (deliveryNote) {
-    deliveryNote.textContent = isEmail 
-      ? `Verification code dispatched to ${target}. Check your inbox or spam.` 
-      : `Verification code dispatched to +91 ${cleanPhone}. Check your phone SMS.`;
-  }
-
-  if (hintDisplay) {
-    hintDisplay.textContent = isEmail ? `Code sent to ${target}` : `Code sent to +91 ${cleanPhone}`;
-  }
+  const gwConfig = getSmsGatewayConfig();
+  const testModeBox = document.getElementById('otp-test-mode-box');
 
   const revealCode = document.getElementById('otp-reveal-code');
   const phoneStrong = document.getElementById('otp-phone-strong');
@@ -4553,8 +4542,7 @@ async function sendLiveOTP() {
 
   hideOTPError();
 
-  // 1. If Firebase Phone Auth is configured, dispatch real carrier SMS via Google
-  const gwConfig = getSmsGatewayConfig();
+  // 1. If Firebase Phone Auth is configured and credentials exist
   if (!isEmail && gwConfig.provider === 'firebase' && ensureFirebaseInitialized()) {
     try {
       const appVerifier = setupFirebaseRecaptcha();
@@ -4566,25 +4554,59 @@ async function sendLiveOTP() {
         
         if (bannerTitle) bannerTitle.textContent = 'Real SMS Dispatched via Firebase';
         if (deliveryNote) deliveryNote.textContent = `Real carrier SMS sent to +91 ${cleanPhone}. Please check your phone.`;
+        if (hintDisplay) hintDisplay.textContent = `Code sent to +91 ${cleanPhone} via Firebase`;
+        if (testModeBox) testModeBox.classList.add('hidden');
         triggerToast(`📲 Real SMS dispatched to +91 ${cleanPhone} via Google Firebase!`);
         return;
       }
     } catch (fbErr) {
       console.warn('Firebase Phone Auth notice:', fbErr);
       if (deliveryNote) {
-        deliveryNote.textContent = `Firebase: ${fbErr.message || 'Check credentials'}. Session code active.`;
+        deliveryNote.textContent = `Firebase: ${fbErr.message || 'Check credentials'}.`;
       }
+      triggerToast(`⚠️ Firebase: ${fbErr.message || 'Config needed'}`);
     }
   }
 
-  // Dispatch via /api/send-otp
-  await dispatchUnifiedOTP(target, liveCode, isEmail);
-
-  if (isEmail) {
-    triggerToast(`✉️ Verification code sent to ${target}`);
-  } else {
-    triggerToast(`📲 SMS verification code sent to +91 ${cleanPhone}`);
+  // 2. Fast2SMS dispatch
+  if (!isEmail && gwConfig.provider === 'fast2sms' && gwConfig.apiKey) {
+    triggerToast(`Connecting Fast2SMS Gateway for +91 ${cleanPhone}...`);
+    const dispatchRes = await dispatchUnifiedOTP(target, liveCode, isEmail);
+    if (dispatchRes && dispatchRes.ok) {
+      if (bannerTitle) bannerTitle.textContent = 'Real SMS Dispatched via Fast2SMS';
+      if (deliveryNote) deliveryNote.textContent = `Real carrier SMS sent to +91 ${cleanPhone}. Check your phone.`;
+      if (hintDisplay) hintDisplay.textContent = `Code sent to +91 ${cleanPhone} via Fast2SMS`;
+      if (testModeBox) testModeBox.classList.add('hidden');
+      triggerToast(`📲 Real SMS dispatched to +91 ${cleanPhone} via Fast2SMS!`);
+      return;
+    }
   }
+
+  // 3. Email dispatch
+  if (isEmail) {
+    await dispatchUnifiedOTP(target, liveCode, isEmail);
+    if (bannerTitle) bannerTitle.textContent = 'Verification Code Generated';
+    if (deliveryNote) deliveryNote.textContent = `Verification code active for ${target}.`;
+    if (hintDisplay) hintDisplay.textContent = `Code generated for ${target}`;
+    if (testModeBox) testModeBox.classList.remove('hidden');
+    triggerToast(`✉️ Verification code generated for ${target}`);
+    return;
+  }
+
+  // 4. Fallback / Test Session Mode when no telecom gateway credentials are entered yet
+  if (bannerTitle) {
+    bannerTitle.textContent = 'Session Code Active (SMS Gateway Disconnected)';
+  }
+  if (deliveryNote) {
+    deliveryNote.textContent = `Telecom carriers require a connected SMS Gateway (Google Firebase or Fast2SMS) to deliver SIM SMS to +91 ${cleanPhone}.`;
+  }
+  if (hintDisplay) {
+    hintDisplay.textContent = `Enter code ${liveCode} or auto-fill below`;
+  }
+  if (testModeBox) {
+    testModeBox.classList.remove('hidden');
+  }
+  triggerToast(`⚡ Session code active! Connect Firebase/Fast2SMS in Gateway Settings for real phone SMS.`);
 }
 
 function autoFillRevealedOTP() {
@@ -4791,7 +4813,7 @@ function hideOTPError() {
   }
 }
 
-function handleOTPLogin() {
+async function handleOTPLogin() {
   const contactInput = document.getElementById('otp-mobile');
   const contact = (contactInput ? contactInput.value : '').trim();
 
@@ -5021,6 +5043,28 @@ function setupFirebaseRecaptcha() {
   } catch (err) {
     console.warn('reCAPTCHA notice:', err);
     return null;
+  }
+}
+
+function handleFirebaseQuickPaste(text) {
+  if (!text) return;
+  const apiKeyMatch = text.match(/apiKey\s*:\s*["']([^"']+)["']/);
+  const authDomainMatch = text.match(/authDomain\s*:\s*["']([^"']+)["']/);
+  const projectIdMatch = text.match(/projectId\s*:\s*["']([^"']+)["']/);
+  const appIdMatch = text.match(/appId\s*:\s*["']([^"']+)["']/);
+
+  const apiKeyEl = document.getElementById('firebase-api-key');
+  const authDomainEl = document.getElementById('firebase-auth-domain');
+  const projectIdEl = document.getElementById('firebase-project-id');
+  const appIdEl = document.getElementById('firebase-app-id');
+
+  if (apiKeyMatch && apiKeyEl) apiKeyEl.value = apiKeyMatch[1];
+  if (authDomainMatch && authDomainEl) authDomainEl.value = authDomainMatch[1];
+  if (projectIdMatch && projectIdEl) projectIdEl.value = projectIdMatch[1];
+  if (appIdMatch && appIdEl) appIdEl.value = appIdMatch[1];
+
+  if (apiKeyMatch || projectIdMatch) {
+    triggerToast('✓ Firebase config parsed and populated!');
   }
 }
 
@@ -8723,3 +8767,4 @@ window.autoFillRevealedOTP = autoFillRevealedOTP;
 window.getFirebaseConfig = getFirebaseConfig;
 window.ensureFirebaseInitialized = ensureFirebaseInitialized;
 window.setupFirebaseRecaptcha = setupFirebaseRecaptcha;
+window.handleFirebaseQuickPaste = handleFirebaseQuickPaste;

@@ -4809,19 +4809,20 @@
                   <div id="otp-test-mode-box" class="p-2.5 bg-amber-50 rounded-xl border border-amber-200 text-xs text-amber-900 space-y-2">
                     <div class="flex items-center justify-between">
                       <span class="font-bold flex items-center gap-1 text-[11px]">
-                        <span class="material-symbols-outlined text-[15px] text-amber-600">info</span>
-                        <span>Why no SMS arrived yet?</span>
+                        <span class="material-symbols-outlined text-[15px] text-amber-600">settings_remote</span>
+                        <span>SMS Gateway Disconnected</span>
                       </span>
-                      <button type="button" onclick="openSmsGatewayModal()" class="text-amber-800 underline font-bold text-[11px] cursor-pointer">
-                        Connect Fast2SMS
+                      <button type="button" onclick="openSmsGatewayModal()" class="text-amber-800 underline font-bold text-[11px] cursor-pointer flex items-center gap-0.5">
+                        <span class="material-symbols-outlined text-[12px]">tune</span>
+                        <span>Connect Firebase / Fast2SMS</span>
                       </button>
                     </div>
                     <p class="text-[11px] text-amber-800/90 leading-snug">
-                      Telecom carriers (Airtel/Jio) require an active SMS Gateway API key (Fast2SMS/Twilio) to deliver SIM text messages to <strong id="otp-phone-strong">+91 6383572077</strong>.
+                      Cellular carriers require an SMS Gateway (Google Firebase 10,000 free SMS/mo or Fast2SMS) to send SIM SMS to <strong id="otp-phone-strong">+91 6383572077</strong>.
                     </p>
                     <div class="flex items-center justify-between bg-white p-2 rounded-lg border border-amber-200/80">
                       <div class="text-[11px] text-slate-700">
-                        <span class="text-slate-500 font-semibold block text-[10px]">CURRENT OTP CODE:</span>
+                        <span class="text-slate-500 font-semibold block text-[10px]">IMMEDIATE TEST CODE:</span>
                         <strong id="otp-reveal-code" class="font-mono text-slate-900 font-extrabold text-[16px] tracking-widest select-all">------</strong>
                       </div>
                       <div class="flex items-center gap-1.5">
@@ -5464,6 +5465,10 @@
             </a>
           </div>
           <div class="space-y-1.5">
+            <div>
+              <label class="text-[10px] font-bold text-slate-600 uppercase block">Quick Paste Firebase Config Snippet (Auto-Fills All)</label>
+              <textarea id="firebase-quick-paste" rows="2" placeholder="Paste const firebaseConfig = { apiKey: '...' } here" class="w-full p-2 rounded-lg border border-slate-300 bg-white font-mono text-[11px] outline-none" oninput="handleFirebaseQuickPaste(this.value)"></textarea>
+            </div>
             <div>
               <label class="text-[10px] font-bold text-slate-600 uppercase block">API Key</label>
               <input id="firebase-api-key" type="text" placeholder="AIzaSy..." class="w-full p-2 rounded-lg border border-slate-300 bg-white font-mono text-xs outline-none" />
