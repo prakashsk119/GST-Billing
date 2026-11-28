@@ -4763,86 +4763,97 @@
             </div>
 
             <!-- ============================================== -->
-            <!-- FLOW 3: LOGIN WITH OTP (LIVE INTERACTIVE ENGINE) -->
+            <!-- FLOW 3: LOGIN WITH OTP (MOBILE OR EMAIL AUTO-DISPATCH) -->
             <!-- ============================================== -->
             <div id="login-flow-login_otp" class="auth-flow-block hidden">
               <h2 class="text-center font-bold text-[24px] text-slate-900 mb-1 tracking-tight">Login with OTP</h2>
-              <p class="text-center text-slate-500 text-[12px] mb-4">Enter your 10-digit registered Indian mobile number</p>
+              <p class="text-center text-slate-500 text-[12px] mb-4">Enter your 10-digit mobile number or email address</p>
 
               <form onsubmit="event.preventDefault(); handleOTPLogin();" class="space-y-3.5">
-                <!-- Mobile Number Input -->
+                <!-- Mobile Number or Email Input -->
                 <div>
                   <div class="flex items-center justify-between mb-1">
-                    <label class="font-semibold text-slate-800 text-[13px] block">Mobile Number</label>
+                    <label class="font-semibold text-slate-800 text-[13px] block">Mobile Number or Email</label>
                     <button type="button" onclick="openSmsGatewayModal()" class="text-[11px] text-primary hover:underline font-semibold flex items-center gap-1 cursor-pointer">
-                      <span class="material-symbols-outlined text-[14px]">cell_tower</span>
-                      <span>SMS Gateway</span>
+                      <span class="material-symbols-outlined text-[14px]">tune</span>
+                      <span>Gateway Settings</span>
                     </button>
                   </div>
                   <div class="flex rounded-xl border border-slate-300 bg-white overflow-hidden focus-within:border-amber-500 focus-within:ring-2 focus-within:ring-amber-200 transition-all">
-                    <span class="bg-slate-100 px-3 py-2.5 border-r border-slate-300 font-bold text-[13px] text-slate-700 flex items-center select-none">+91</span>
-                    <input id="otp-mobile" type="tel" maxlength="10" value="6383572077" placeholder="Enter 10-digit mobile" class="w-full py-2.5 px-3 bg-transparent text-slate-900 outline-none text-[14px] font-semibold font-mono" oninput="this.value = this.value.replace(/[^0-9]/g, ''); if(this.value.length === 10 && typeof onMobileInputReady === 'function') onMobileInputReady();" />
-                    <button id="otp-send-btn" type="button" onclick="sendLiveOTP()" class="px-3 py-2 bg-amber-400 hover:bg-amber-500 active:scale-95 text-slate-950 font-bold text-[12px] transition-all cursor-pointer whitespace-nowrap flex items-center gap-1 border-l border-slate-200">
+                    <span id="otp-input-prefix" class="bg-slate-100 px-3 py-2.5 border-r border-slate-300 font-bold text-[13px] text-slate-700 flex items-center select-none">+91</span>
+                    <input id="otp-mobile" type="text" value="6383572077" placeholder="e.g. 6383572077 or name@gmail.com" class="w-full py-2.5 px-3 bg-transparent text-slate-900 outline-none text-[14px] font-semibold font-mono" oninput="handleContactInputChange(this.value);" />
+                    <button id="otp-send-btn" type="button" onclick="sendLiveOTP()" class="px-4 py-2 bg-amber-400 hover:bg-amber-500 active:scale-95 text-slate-950 font-bold text-[13px] transition-all cursor-pointer whitespace-nowrap flex items-center gap-1.5 border-l border-slate-200">
                       <span class="material-symbols-outlined text-[16px]">send</span>
                       <span id="otp-send-btn-label">Send OTP</span>
                     </button>
                   </div>
                 </div>
 
-                <!-- Instant Dispatch Buttons: WhatsApp & Normal SMS -->
-                <div class="grid grid-cols-2 gap-2">
-                  <button type="button" onclick="sendLiveOTP('whatsapp')" class="py-2.5 px-3 rounded-xl bg-emerald-50 hover:bg-emerald-100 border border-emerald-300 text-emerald-900 font-bold text-[11px] transition-all flex items-center justify-center gap-1.5 cursor-pointer shadow-2xs active:scale-95">
-                    <span class="material-symbols-outlined text-[17px] text-[#25d366]">chat</span>
-                    <span>Send to WhatsApp</span>
-                  </button>
-                  <button type="button" onclick="sendLiveOTP('sms')" class="py-2.5 px-3 rounded-xl bg-blue-50 hover:bg-blue-100 border border-blue-300 text-blue-900 font-bold text-[11px] transition-all flex items-center justify-center gap-1.5 cursor-pointer shadow-2xs active:scale-95">
-                    <span class="material-symbols-outlined text-[17px] text-blue-600">sms</span>
-                    <span>Send Normal SMS</span>
-                  </button>
-                </div>
-
-                <!-- OTP DISPATCHED BANNER (Security: Code NOT shown here, delivered directly to WhatsApp & Phone SMS) -->
+                <!-- OTP DISPATCHED STATUS BANNER (Clean, automatic delivery confirmation) -->
                 <div id="otp-live-banner" class="hidden rounded-xl border border-emerald-300 bg-emerald-50/90 p-3.5 shadow-xs animate-fade-in text-slate-800 space-y-2.5">
                   <div class="flex items-center justify-between">
                     <div class="flex items-center gap-1.5 font-bold text-[12px] text-emerald-900">
                       <span class="inline-block w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
-                      <span id="otp-banner-title">OTP Sent to Phone</span>
+                      <span id="otp-banner-title">OTP Generated</span>
                     </div>
                     <span id="otp-live-timer" class="font-mono text-[11px] font-semibold text-emerald-700 bg-white/80 px-2 py-0.5 rounded-md border border-emerald-200">Expires: 05:00</span>
                   </div>
                   
-                  <div class="bg-white rounded-lg p-3 border border-emerald-200/80 shadow-2xs space-y-2">
+                  <div class="bg-white rounded-lg p-3 border border-emerald-200/80 shadow-2xs">
                     <p class="text-[12px] text-slate-700 leading-snug">
-                      Your 6-digit verification code has been dispatched to <strong id="otp-sent-phone-display" class="font-mono text-slate-900">+91 6383572077</strong> via WhatsApp and normal SMS.
+                      Your 6-digit verification code has been generated for <strong id="otp-sent-phone-display" class="font-mono text-slate-900">+91 6383572077</strong>.
                     </p>
-                    
-                    <!-- Direct Open Actions -->
-                    <div class="flex items-center gap-2 pt-0.5 flex-wrap">
-                      <button id="otp-open-whatsapp-btn" type="button" onclick="openWhatsAppOTP()" class="px-3 py-1.5 rounded-lg bg-[#25d366] hover:bg-[#20ba59] text-white font-bold text-[11px] inline-flex items-center gap-1.5 shadow-xs active:scale-95 transition-transform cursor-pointer">
-                        <span class="material-symbols-outlined text-[15px]">chat</span>
-                        <span>Open WhatsApp Chat</span>
+                  </div>
+
+                  <!-- Real-time SMS Gateway & Session Code Helper -->
+                  <div id="otp-test-mode-box" class="p-2.5 bg-amber-50 rounded-xl border border-amber-200 text-xs text-amber-900 space-y-2">
+                    <div class="flex items-center justify-between">
+                      <span class="font-bold flex items-center gap-1 text-[11px]">
+                        <span class="material-symbols-outlined text-[15px] text-amber-600">info</span>
+                        <span>Why no SMS arrived yet?</span>
+                      </span>
+                      <button type="button" onclick="openSmsGatewayModal()" class="text-amber-800 underline font-bold text-[11px] cursor-pointer">
+                        Connect Fast2SMS
                       </button>
-                      <button id="otp-open-sms-btn" type="button" onclick="openSmsOTP()" class="px-3 py-1.5 rounded-lg bg-slate-900 hover:bg-slate-800 text-white font-bold text-[11px] inline-flex items-center gap-1.5 shadow-xs active:scale-95 transition-transform cursor-pointer">
-                        <span class="material-symbols-outlined text-[15px]">sms</span>
-                        <span>Open Normal SMS</span>
-                      </button>
+                    </div>
+                    <p class="text-[11px] text-amber-800/90 leading-snug">
+                      Telecom carriers (Airtel/Jio) require an active SMS Gateway API key (Fast2SMS/Twilio) to deliver SIM text messages to <strong id="otp-phone-strong">+91 6383572077</strong>.
+                    </p>
+                    <div class="flex items-center justify-between bg-white p-2 rounded-lg border border-amber-200/80">
+                      <div class="text-[11px] text-slate-700">
+                        <span class="text-slate-500 font-semibold block text-[10px]">CURRENT OTP CODE:</span>
+                        <strong id="otp-reveal-code" class="font-mono text-slate-900 font-extrabold text-[16px] tracking-widest select-all">------</strong>
+                      </div>
+                      <div class="flex items-center gap-1.5">
+                        <button type="button" onclick="autoFillRevealedOTP()" class="px-2.5 py-1.5 rounded-lg bg-amber-400 hover:bg-amber-500 text-slate-950 font-bold text-[11px] shadow-xs active:scale-95 transition-transform cursor-pointer">
+                          Auto-Fill
+                        </button>
+                        <button type="button" onclick="openWhatsAppOTP()" class="px-2.5 py-1.5 rounded-lg bg-[#25d366] hover:bg-[#20ba59] text-white font-bold text-[11px] flex items-center gap-1 shadow-xs active:scale-95 transition-transform cursor-pointer" title="Send to WhatsApp">
+                          <span class="material-symbols-outlined text-[13px]">chat</span>
+                          <span>WhatsApp</span>
+                        </button>
+                      </div>
                     </div>
                   </div>
 
-                  <div class="text-[11px] text-emerald-800 flex items-center gap-1">
-                    <span class="material-symbols-outlined text-[14px]">lock</span>
-                    <span id="otp-delivery-note">For security, check your phone and enter the 6-digit code below</span>
+                  <div class="flex items-center justify-between text-[11px] text-emerald-800 pt-0.5">
+                    <div class="flex items-center gap-1">
+                      <span class="material-symbols-outlined text-[14px]">mark_email_read</span>
+                      <span id="otp-delivery-note">Enter the 6-digit code below to sign in</span>
+                    </div>
                   </div>
 
-                  <!-- Kept hidden so all existing DOM validations succeed without exposing code on-screen -->
+                  <!-- Hidden elements to keep DOM references completely safe -->
                   <span id="otp-live-code-display" class="hidden"></span>
+                  <button id="otp-open-whatsapp-btn" type="button" class="hidden"></button>
+                  <button id="otp-open-sms-btn" type="button" class="hidden"></button>
                 </div>
 
                 <!-- 6-Digit OTP Boxes -->
                 <div>
                   <div class="flex items-center justify-between mb-1.5">
                     <label class="font-semibold text-slate-800 text-[13px]">Enter 6-Digit OTP</label>
-                    <span id="otp-input-hint" class="text-[11px] text-slate-500 font-mono">Click "Send OTP" to receive code</span>
+                    <span id="otp-input-hint" class="text-[11px] text-slate-500 font-mono">Code sent to mobile / email</span>
                   </div>
                   <!-- 6 digit interactive boxes -->
                   <div id="otp-boxes-container" class="grid grid-cols-6 gap-2">

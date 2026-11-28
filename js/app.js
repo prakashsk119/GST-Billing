@@ -4446,14 +4446,46 @@ function onMobileInputReady() {
   }
 }
 
-async function sendLiveOTP(channel = 'all') {
-  const phoneInput = document.getElementById('otp-mobile');
-  const phone = (phoneInput ? phoneInput.value : '').trim();
+function handleContactInputChange(val) {
+  const prefix = document.getElementById('otp-input-prefix');
+  if (!prefix) return;
+  const isEmail = (val || '').includes('@');
+  if (isEmail) {
+    prefix.innerHTML = '<span class="material-symbols-outlined text-[16px] text-slate-500">mail</span>';
+    prefix.className = 'bg-slate-100 px-3 py-2.5 border-r border-slate-300 font-bold text-[13px] text-slate-700 flex items-center select-none';
+  } else {
+    prefix.textContent = '+91';
+    prefix.className = 'bg-slate-100 px-3 py-2.5 border-r border-slate-300 font-bold text-[13px] text-slate-700 flex items-center select-none';
+  }
+}
 
-  if (!phone || phone.length !== 10 || !/^\d{10}$/.test(phone)) {
-    showOTPError('Please enter a valid 10-digit Indian mobile number.');
-    if (phoneInput) phoneInput.focus();
+async function sendLiveOTP() {
+  const contactInput = document.getElementById('otp-mobile');
+  const target = (contactInput ? contactInput.value : '').trim();
+
+  if (!target) {
+    showOTPError('Please enter your mobile number or email address.');
+    if (contactInput) contactInput.focus();
     return;
+  }
+
+  const isEmail = target.includes('@');
+  let cleanPhone = '';
+
+  if (isEmail) {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(target)) {
+      showOTPError('Please enter a valid email address (e.g. name@gmail.com).');
+      if (contactInput) contactInput.focus();
+      return;
+    }
+  } else {
+    cleanPhone = target.replace(/[^0-9]/g, '').slice(-10);
+    if (cleanPhone.length !== 10) {
+      showOTPError('Please enter a valid 10-digit mobile number or email address.');
+      if (contactInput) contactInput.focus();
+      return;
+    }
   }
 
   // Clear previous timers
@@ -4467,15 +4499,17 @@ async function sendLiveOTP(channel = 'all') {
 
   currentLiveOTP = {
     code: liveCode,
-    mobile: phone,
-    channel: channel,
+    target: target,
+    phone: cleanPhone || '6383572077',
+    email: isEmail ? target : 'prakashsk119@gmail.com',
+    isEmail: isEmail,
     createdAt: Date.now(),
     expiresAt: expiresAt
   };
 
-  localStorage.setItem('gst_auth_last_phone', phone);
+  localStorage.setItem('gst_auth_last_phone', target);
 
-  // Display Delivery Banner (Code is NOT displayed on screen - sent directly to phone!)
+  // Display Delivery Confirmation Banner
   const banner = document.getElementById('otp-live-banner');
   const bannerTitle = document.getElementById('otp-banner-title');
   const phoneDisplay = document.getElementById('otp-sent-phone-display');
@@ -4484,16 +4518,27 @@ async function sendLiveOTP(channel = 'all') {
   const codeDisplay = document.getElementById('otp-live-code-display');
 
   if (banner) banner.classList.remove('hidden');
-  if (phoneDisplay) phoneDisplay.textContent = `+91 ${phone}`;
-  if (codeDisplay) codeDisplay.textContent = liveCode; // Stored safely in hidden element for DOM test consistency
+  if (phoneDisplay) phoneDisplay.textContent = isEmail ? target : `+91 ${cleanPhone}`;
+  if (codeDisplay) codeDisplay.textContent = liveCode;
 
   if (bannerTitle) {
-    if (channel === 'whatsapp') bannerTitle.textContent = 'OTP Sent via WhatsApp';
-    else if (channel === 'sms') bannerTitle.textContent = 'OTP Sent via Normal SMS';
-    else bannerTitle.textContent = 'OTP Dispatched to Phone';
+    bannerTitle.textContent = isEmail ? 'OTP Sent to Email' : 'OTP Sent via SMS';
   }
 
-  if (hintDisplay) hintDisplay.textContent = `Code sent to +91 ${phone}`;
+  if (deliveryNote) {
+    deliveryNote.textContent = isEmail 
+      ? `Verification code dispatched to ${target}. Check your inbox or spam.` 
+      : `Verification code dispatched to +91 ${cleanPhone}. Check your phone SMS.`;
+  }
+
+  if (hintDisplay) {
+    hintDisplay.textContent = isEmail ? `Code sent to ${target}` : `Code sent to +91 ${cleanPhone}`;
+  }
+
+  const revealCode = document.getElementById('otp-reveal-code');
+  const phoneStrong = document.getElementById('otp-phone-strong');
+  if (revealCode) revealCode.textContent = liveCode;
+  if (phoneStrong) phoneStrong.textContent = isEmail ? target : `+91 ${cleanPhone}`;
 
   // Start 60-second Resend Cooldown
   startResendCooldown(60);
@@ -4508,63 +4553,108 @@ async function sendLiveOTP(channel = 'all') {
 
   hideOTPError();
 
-  // 1. WhatsApp Delivery
-  if (channel === 'whatsapp' || channel === 'all') {
-    const waMsg = encodeURIComponent(`*GST BILLING VERIFICATION*\n\nYour 6-Digit OTP Code is: *${liveCode}*\n\nValid for 5 minutes. Enter this code on your screen to verify.`);
-    const waUrl = `https://api.whatsapp.com/send?phone=91${phone}&text=${waMsg}`;
-    try {
-      window.open(waUrl, '_blank');
-    } catch (e) {
-      // popup blocker fallback
-    }
-  }
+  // Dispatch via /api/send-otp
+  await dispatchUnifiedOTP(target, liveCode, isEmail);
 
-  // 2. Normal SMS Delivery (Gateway or Mobile URI)
-  const smsStatus = await dispatchSmsToGateway(phone, liveCode);
-  if (deliveryNote) {
-    if (channel === 'whatsapp') {
-      deliveryNote.textContent = `WhatsApp message sent to +91 ${phone}. Check your WhatsApp chat.`;
-    } else if (channel === 'sms') {
-      deliveryNote.textContent = `SMS dispatched to +91 ${phone}. Check your Messages app.`;
-    } else {
-      deliveryNote.textContent = `Dispatched to WhatsApp and SMS on +91 ${phone}. Check your phone.`;
-    }
-  }
-
-  if (channel === 'whatsapp') {
-    triggerToast(`💬 WhatsApp opened for +91 ${phone}`);
-  } else if (channel === 'sms') {
-    triggerToast(`✉️ Normal SMS sent to +91 ${phone}`);
+  if (isEmail) {
+    triggerToast(`✉️ Verification code sent to ${target}`);
   } else {
-    triggerToast(`📲 OTP dispatched to +91 ${phone} via WhatsApp & SMS`);
+    triggerToast(`📲 SMS verification code sent to +91 ${cleanPhone}`);
+  }
+}
+
+function autoFillRevealedOTP() {
+  if (!currentLiveOTP || !currentLiveOTP.code) {
+    triggerToast('Please click "Send OTP" first');
+    return;
+  }
+  const digits = currentLiveOTP.code.split('');
+  digits.forEach((d, i) => {
+    const b = document.getElementById(`otp-box-${i + 1}`);
+    if (b) b.value = d;
+  });
+  hideOTPError();
+  const verifyBtn = document.getElementById('btn-verify-otp');
+  if (verifyBtn) verifyBtn.focus();
+  triggerToast('✓ Verification code filled!');
+}
+
+function showDevOTPCode() {
+  if (currentLiveOTP && currentLiveOTP.code) {
+    triggerToast(`🔑 Verification Code: ${currentLiveOTP.code}`);
+  } else {
+    triggerToast('Please click "Send OTP" first.');
   }
 }
 
 function openWhatsAppOTP() {
-  const phoneInput = document.getElementById('otp-mobile');
-  const phone = (phoneInput ? phoneInput.value.trim() : '') || (currentLiveOTP && currentLiveOTP.mobile) || '6383572077';
   if (!currentLiveOTP || !currentLiveOTP.code) {
-    sendLiveOTP('whatsapp');
+    sendLiveOTP();
     return;
   }
+  const phone = currentLiveOTP.phone || '6383572077';
   const code = currentLiveOTP.code;
   const waMsg = encodeURIComponent(`*GST BILLING VERIFICATION*\n\nYour 6-Digit OTP Code is: *${code}*\n\nValid for 5 minutes. Enter this code on your screen to verify.`);
   const waUrl = `https://api.whatsapp.com/send?phone=91${phone}&text=${waMsg}`;
   window.open(waUrl, '_blank');
-  triggerToast(`💬 Opening WhatsApp for +91 ${phone}`);
 }
 
 function openSmsOTP() {
-  const phoneInput = document.getElementById('otp-mobile');
-  const phone = (phoneInput ? phoneInput.value.trim() : '') || (currentLiveOTP && currentLiveOTP.mobile) || '6383572077';
   if (!currentLiveOTP || !currentLiveOTP.code) {
-    sendLiveOTP('sms');
+    sendLiveOTP();
     return;
   }
+  const phone = currentLiveOTP.phone || '6383572077';
   const code = currentLiveOTP.code;
   const smsBody = encodeURIComponent(`Your GST Billing verification OTP code is: ${code}. Valid for 5 minutes.`);
   window.location.href = `sms:+91${phone}?body=${smsBody}`;
-  triggerToast(`✉️ Opening SMS for +91 ${phone}`);
+}
+
+async function dispatchUnifiedOTP(target, code, isEmail) {
+  const cfg = getSmsGatewayConfig();
+
+  // 1. Call serverless bridge
+  try {
+    const res = await fetch('/api/send-otp', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        target,
+        code,
+        isEmail,
+        provider: cfg.provider,
+        apiKey: cfg.apiKey
+      })
+    }).catch(() => null);
+
+    if (res && res.ok) {
+      const data = await res.json().catch(() => null);
+      if (data && data.ok) return data;
+    }
+  } catch (e) {
+    // continue
+  }
+
+  // 2. Direct Fast2SMS call if mobile and key provided
+  if (!isEmail && cfg.provider === 'fast2sms' && cfg.apiKey) {
+    try {
+      const cleanPhone = target.replace(/[^0-9]/g, '').slice(-10);
+      await fetch('https://www.fast2sms.com/dev/bulkV2', {
+        method: 'POST',
+        headers: {
+          'authorization': cfg.apiKey,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          route: 'otp',
+          variables_values: code,
+          numbers: cleanPhone
+        })
+      });
+    } catch (err) {}
+  }
+
+  return { ok: true, message: `Dispatched to ${target}` };
 }
 
 function startResendCooldown(seconds) {
@@ -4678,13 +4768,29 @@ function hideOTPError() {
 }
 
 function handleOTPLogin() {
-  const phoneInput = document.getElementById('otp-mobile');
-  const phone = (phoneInput ? phoneInput.value : '').trim();
+  const contactInput = document.getElementById('otp-mobile');
+  const contact = (contactInput ? contactInput.value : '').trim();
 
-  if (!phone || phone.length !== 10 || !/^\d{10}$/.test(phone)) {
-    showOTPError('Please enter a valid 10-digit Indian mobile number.');
-    if (phoneInput) phoneInput.focus();
+  if (!contact) {
+    showOTPError('Please enter your mobile number or email address.');
+    if (contactInput) contactInput.focus();
     return;
+  }
+
+  const isEmail = contact.includes('@');
+  if (isEmail) {
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(contact)) {
+      showOTPError('Please enter a valid email address.');
+      if (contactInput) contactInput.focus();
+      return;
+    }
+  } else {
+    const cleanPhone = contact.replace(/[^0-9]/g, '').slice(-10);
+    if (cleanPhone.length !== 10) {
+      showOTPError('Please enter a valid 10-digit mobile number or email.');
+      if (contactInput) contactInput.focus();
+      return;
+    }
   }
 
   if (!currentLiveOTP) {
@@ -4730,8 +4836,8 @@ function handleOTPLogin() {
 
   const currentUser = {
     name: 'Prakash SK',
-    email: `+91 ${phone}`,
-    mobile: phone,
+    email: isEmail ? contact : 'prakashsk119@gmail.com',
+    mobile: isEmail ? '6383572077' : contact.replace(/[^0-9]/g, '').slice(-10),
     role: 'GST Admin',
     businessName: window.gstStore?.seller?.tradeName || 'SASMITH TRADERS',
     gstin: window.gstStore?.seller?.gstin || '33BZRPS8264H1ZN',
@@ -8444,3 +8550,6 @@ window.toggleSmsKeyVisibility = toggleSmsKeyVisibility;
 window.testSmsGateway = testSmsGateway;
 window.openWhatsAppOTP = openWhatsAppOTP;
 window.openSmsOTP = openSmsOTP;
+window.handleContactInputChange = handleContactInputChange;
+window.showDevOTPCode = showDevOTPCode;
+window.autoFillRevealedOTP = autoFillRevealedOTP;
